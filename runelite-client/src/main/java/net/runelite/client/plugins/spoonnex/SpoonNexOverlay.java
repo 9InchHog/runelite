@@ -42,7 +42,7 @@ class SpoonNexOverlay extends Overlay {
 					if (textLoc != null) {
 						Point pointShadow = new Point(textLoc.getX() + 1, textLoc.getY() + 1);
 						OverlayUtil.renderTextLocation(graphics, pointShadow, text, Color.BLACK);
-						OverlayUtil.renderTextLocation(graphics, textLoc, text, Color.WHITE);
+						OverlayUtil.renderTextLocation(graphics, textLoc, text, config.forWhy() ? plugin.forWhyColors.get(0) : Color.WHITE);
 					}
 				} else if((config.attacksTilSpecial() != SpoonNexConfig.AttacksTilSpecialMode.OFF || (plugin.nex.specialTicksLeft > 0 && config.specialTicks())) && plugin.nex.phase != 5) {
 					Color color;
@@ -101,9 +101,9 @@ class SpoonNexOverlay extends Overlay {
 
 				if (config.sacrifice() && plugin.nex.currentSpecial.equals("sacrifice") && plugin.nex.phase == 3 && plugin.nex.specialTicksLeft > 0 && plugin.sacrificeTarget) {
 					if (nexLp != null) {
-						Polygon tilePoly = Perspective.getCanvasTileAreaPoly(this.client, nexLp, 13);
+						Polygon tilePoly = Perspective.getCanvasTileAreaPoly(this.client, nexLp, 17);
 						if (tilePoly != null) {
-							Color color = config.forWhy() ? plugin.forWhyColors.get(2) : Color.ORANGE;
+							Color color = config.forWhy() ? plugin.forWhyColors.get(1) : Color.ORANGE;
 							this.renderPoly(graphics, color, tilePoly);
 						}
 					}
@@ -120,7 +120,7 @@ class SpoonNexOverlay extends Overlay {
 				}
 
 				if(plugin.activeMage != null && (config.mageHighlight() != SpoonNexConfig.MageHighlightMode.ARROW || config.mageHighlight() != SpoonNexConfig.MageHighlightMode.OFF)) {
-						Color color = config.forWhy() ? plugin.forWhyColors.get(4) : config.mageHighlightColor();
+						Color color = config.forWhy() ? plugin.forWhyColors.get(3) : config.mageHighlightColor();
 						LocalPoint lp = plugin.activeMage.getLocalLocation();
 						if (lp != null) {
 							Polygon poly = Perspective.getCanvasTilePoly(client, lp);
@@ -131,7 +131,7 @@ class SpoonNexOverlay extends Overlay {
 				if(plugin.covidList.size() > 0 && config.virus() != SpoonNexConfig.VirusMode.OFF) {
 					for(Player p : client.getPlayers()) {
 						if(plugin.covidList.containsKey(p.getName())) {
-							Color color = config.forWhy() ? plugin.forWhyColors.get(5) : new Color(100, 255, 0);
+							Color color = config.forWhy() ? plugin.forWhyColors.get(4) : new Color(100, 255, 0);
 							LocalPoint lp = p.getLocalLocation();
 							if (lp != null) {
 								Polygon poly = config.virus() == SpoonNexConfig.VirusMode.TILE ? Perspective.getCanvasTilePoly(client, lp) : Perspective.getCanvasTileAreaPoly(client, lp ,3);
@@ -142,7 +142,7 @@ class SpoonNexOverlay extends Overlay {
 				}
 
 				if(config.tankHighlight() && plugin.nex.npc.getInteracting() != null) {
-					Color color = config.forWhy() ? plugin.forWhyColors.get(6) : config.tankHighlightColor();
+					Color color = config.forWhy() ? plugin.forWhyColors.get(5) : config.tankHighlightColor();
 					LocalPoint lp = plugin.nex.npc.getInteracting().getLocalLocation();
 					if (lp != null) {
 						Polygon poly = Perspective.getCanvasTilePoly(client, lp);
@@ -155,7 +155,7 @@ class SpoonNexOverlay extends Overlay {
 				if (nexLp != null) {
 					Polygon tilePoly = Perspective.getCanvasTileAreaPoly(this.client, nexLp, 7);
 					if (tilePoly != null) {
-						Color color = config.forWhy() ? plugin.forWhyColors.get(3) : Color.RED;
+						Color color = config.forWhy() ? plugin.forWhyColors.get(6) : Color.RED;
 						this.renderPoly(graphics, color, tilePoly);
 					}
 				}
