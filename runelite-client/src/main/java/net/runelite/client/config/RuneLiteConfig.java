@@ -410,7 +410,7 @@ public interface RuneLiteConfig extends Config
 	@ConfigItem(
 		keyName = "overlayBackgroundColor",
 		name = "Overlay Color",
-		description = "Configures the background color of infoboxes and overlays",
+		description = "Configures the background color of overlays and tooltips",
 		position = 44,
 		section = overlaySettings
 	)
