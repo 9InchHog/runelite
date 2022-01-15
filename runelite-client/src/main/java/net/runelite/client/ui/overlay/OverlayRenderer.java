@@ -26,16 +26,8 @@ package net.runelite.client.ui.overlay;
 
 import com.google.common.base.MoreObjects;
 import com.google.common.primitives.Ints;
-import java.awt.Color;
-import java.awt.Composite;
-import java.awt.Cursor;
-import java.awt.Dimension;
-import java.awt.Graphics2D;
-import java.awt.Paint;
-import java.awt.Point;
-import java.awt.Rectangle;
-import java.awt.RenderingHints;
-import java.awt.Stroke;
+
+import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.awt.geom.AffineTransform;
@@ -56,6 +48,7 @@ import net.runelite.api.events.FocusChanged;
 import net.runelite.api.widgets.Widget;
 import net.runelite.api.widgets.WidgetInfo;
 import net.runelite.api.widgets.WidgetItem;
+import net.runelite.client.config.FontType;
 import net.runelite.client.config.RuneLiteConfig;
 import net.runelite.client.eventbus.EventBus;
 import net.runelite.client.eventbus.Subscribe;
@@ -773,15 +766,27 @@ public class OverlayRenderer extends MouseAdapter implements KeyListener
 		// Set font based on configuration
 		if (position == OverlayPosition.DYNAMIC || position == OverlayPosition.DETACHED)
 		{
-			graphics.setFont(runeLiteConfig.fontType().getFont());
+			if(runeLiteConfig.fontType() == FontType.CUSTOM) {
+				graphics.setFont(new Font(runeLiteConfig.customFont(), runeLiteConfig.customFontWeight().getWeight(), runeLiteConfig.customFontSize()));
+			} else {
+				graphics.setFont(runeLiteConfig.fontType().getFont());
+			}
 		}
 		else if (position == OverlayPosition.TOOLTIP)
 		{
-			graphics.setFont(runeLiteConfig.tooltipFontType().getFont());
+			if(runeLiteConfig.tooltipFontType() == FontType.CUSTOM) {
+				graphics.setFont(new Font(runeLiteConfig.customFont(), runeLiteConfig.customFontWeight().getWeight(), runeLiteConfig.customFontSize()));
+			} else {
+				graphics.setFont(runeLiteConfig.tooltipFontType().getFont());
+			}
 		}
 		else
 		{
-			graphics.setFont(runeLiteConfig.interfaceFontType().getFont());
+			if(runeLiteConfig.interfaceFontType() == FontType.CUSTOM) {
+				graphics.setFont(new Font(runeLiteConfig.customFont(), runeLiteConfig.customFontWeight().getWeight(), runeLiteConfig.customFontSize()));
+			} else {
+				graphics.setFont(runeLiteConfig.interfaceFontType().getFont());
+			}
 		}
 
 		graphics.translate(point.x, point.y);
