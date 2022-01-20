@@ -151,7 +151,8 @@ class SpoonNexOverlay extends Overlay {
 					}
 				}
 
-				if (config.noEscapeRunway() != SpoonNexConfig.NoEscapeRunwayMode.OFF && plugin.nex != null && plugin.nex.currentSpecial.equals("no escape") && plugin.nex.specialTicksLeft > 0) {
+				if (config.noEscapeRunway() != SpoonNexConfig.NoEscapeRunwayMode.OFF && plugin.nex != null && plugin.nex.currentSpecial.equals("no escape")
+						&& (plugin.nex.specialTicksLeft > 0 && plugin.nex.specialTicksLeft <= 4)) {
 					WorldPoint leftTop;
 					WorldPoint rightBottom;
 					WorldPoint middle;
@@ -172,6 +173,10 @@ class SpoonNexOverlay extends Overlay {
 					WorldPoint bossLoc = plugin.nex.npc.getWorldLocation();
 					int raveIndex = 0;
 					for (int i = 0; i < 10; i++) {
+						//0 = South
+						//1 = West
+						//2 = North
+						//3 = East
 						if (directionNum == 0) {
 							leftTop = new WorldPoint(bossLoc.getX(), bossLoc.getY() - 1 - i, client.getPlane());
 							middle = new WorldPoint(bossLoc.getX() + 1, bossLoc.getY() - 1 - i, client.getPlane());
@@ -242,21 +247,21 @@ class SpoonNexOverlay extends Overlay {
 	private void drawRunwayTiles(Graphics2D graphics, WorldPoint leftTop, WorldPoint middle, WorldPoint rightBottom, int index, Color color) {
         if(config.noEscapeRunway() == SpoonNexConfig.NoEscapeRunwayMode.RAVEST){
             color = plugin.raveRunway.get(index);
-            drawTile(graphics, leftTop, color, 0, 0, 100);
+            drawTile(graphics, leftTop, color);
             index++;
             color = plugin.raveRunway.get(index);
-            drawTile(graphics, middle, color, 0, 0, 100);
+            drawTile(graphics, middle, color);
             index++;
             color = plugin.raveRunway.get(index);
-            drawTile(graphics, rightBottom, color, 0, 0, 100);
+            drawTile(graphics, rightBottom, color);
         }else {
-            drawTile(graphics, leftTop, color, 0, 0, 100);
-            drawTile(graphics, middle, color, 0, 0, 100);
-            drawTile(graphics, rightBottom, color, 0, 0, 100);
+            drawTile(graphics, leftTop, color);
+            drawTile(graphics, middle, color);
+            drawTile(graphics, rightBottom, color);
         }
     }
 
-	protected void drawTile(Graphics2D graphics, WorldPoint point, Color color, int strokeWidth, int outlineAlpha, int fillAlpha) {
+	protected void drawTile(Graphics2D graphics, WorldPoint point, Color color) {
 		if(client.getLocalPlayer() != null) {
 			WorldPoint playerLocation = client.getLocalPlayer().getWorldLocation();
 			if (point.distanceTo(playerLocation) < 32) {
@@ -264,10 +269,10 @@ class SpoonNexOverlay extends Overlay {
 				if (lp != null) {
 					Polygon poly = Perspective.getCanvasTilePoly(client, lp);
 					if (poly != null) {
-						graphics.setColor(new Color(color.getRed(), color.getGreen(), color.getBlue(), outlineAlpha));
-						graphics.setStroke(new BasicStroke(strokeWidth));
+						graphics.setColor(new Color(color.getRed(), color.getGreen(), color.getBlue(), 0));
+						graphics.setStroke(new BasicStroke(0));
 						graphics.draw(poly);
-						graphics.setColor(new Color(color.getRed(), color.getGreen(), color.getBlue(), fillAlpha));
+						graphics.setColor(new Color(color.getRed(), color.getGreen(), color.getBlue(), 120));
 						graphics.fill(poly);
 					}
 				}
