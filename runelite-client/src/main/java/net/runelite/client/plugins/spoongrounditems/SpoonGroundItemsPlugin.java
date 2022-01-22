@@ -81,7 +81,7 @@ import static net.runelite.client.plugins.spoongrounditems.config.MenuHighlightM
 @PluginDescriptor(
 	name = "<html><font color=#25c550>[S] Ground Items",
 	description = "Highlight ground items and/or show price information",
-	tags = {"grand", "exchange", "high", "alchemy", "prices", "highlight", "overlay"},
+	tags = {"grand", "exchange", "high", "alchemy", "prices", "highlight", "overlay", "lootbeam"},
 	conflicts = "Ground Items"
 )
 public class SpoonGroundItemsPlugin extends Plugin
@@ -954,12 +954,13 @@ public class SpoonGroundItemsPlugin extends Plugin
 		Lootbeam lootbeam = lootbeams.get(worldPoint);
 		if (lootbeam == null)
 		{
-			lootbeam = new Lootbeam(client, worldPoint, color);
+			lootbeam = new Lootbeam(client, clientThread, worldPoint, color, config.lootbeamStyle());
 			lootbeams.put(worldPoint, lootbeam);
 		}
 		else
 		{
 			lootbeam.setColor(color);
+			lootbeam.setStyle(config.lootbeamStyle());
 		}
 	}
 

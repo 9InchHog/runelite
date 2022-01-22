@@ -354,10 +354,22 @@ public interface SpoonGroundItemsConfig extends Config
 	}
 
 	@ConfigItem(
+			keyName = "lootbeamStyle",
+			name = "Lootbeam Style",
+			description = "Style of lootbeam to use",
+			position = 10,
+			section = highlight
+	)
+	default Lootbeam.Style lootbeamStyle()
+	{
+		return Lootbeam.Style.MODERN;
+	}
+
+	@ConfigItem(
 			keyName = "raveLootBeams",
 			name = "Rave Loot Beams",
 			description = "catJam",
-			position = 10,
+			position = 11,
 			section = highlight
 	)
 	default RaveLootBeamMode raveLootBeams() { return RaveLootBeamMode.OFF; }
