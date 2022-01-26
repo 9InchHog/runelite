@@ -263,13 +263,13 @@ public interface SocketHealingConfig extends Config {
     )
     default boolean setHighestPriority() { return false; }
 
-    /*@ConfigItem(
+    @ConfigItem(
             position = 27,
             keyName = "healOtherMES",
             name = "Heal Other MES",
             description = "Prioritizes the lowest hp player in socket for heal other"
     )
-    default boolean healOtherMES() { return false; }*/
+    default boolean healOtherMES() { return false; }
 
     enum SocketFontType {
         REGULAR, BOLD, SMALL, CUSTOM;
