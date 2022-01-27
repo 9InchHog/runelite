@@ -433,4 +433,13 @@ public interface SpoonItemChargeConfig extends Config
             section = chargesSection
     )
     default boolean showCoxPotionDoseCount() { return false; }
+
+    @ConfigItem(
+            keyName = "hideFourDosePotionCharges",
+            name = "Hide Four Dose Charges",
+            description = "Hides the potion charge overlay if potion is full",
+            position = 31,
+            section = chargesSection
+    )
+    default boolean hideFourDosePotionCharges() { return false; }
 }
