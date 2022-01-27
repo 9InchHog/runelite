@@ -38,6 +38,9 @@ class SpoonItemChargeOverlay extends WidgetItemOverlay {
 				return;
 			charges = chargeItem.getCharges();
 		}
+		if (charges==4 && config.hideFourDosePotionCharges()){
+			return;
+		}
 		graphics.setFont(FontManager.getRunescapeSmallFont());
 		Rectangle bounds = widgetItem.getCanvasBounds();
 		TextComponent textComponent = new TextComponent();
