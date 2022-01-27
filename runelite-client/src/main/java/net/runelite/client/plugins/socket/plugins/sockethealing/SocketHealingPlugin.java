@@ -1,15 +1,15 @@
 package net.runelite.client.plugins.socket.plugins.sockethealing;
 
 import com.google.inject.Provides;
-import net.runelite.api.Client;
-import net.runelite.api.GameState;
-import net.runelite.api.MenuEntry;
-import net.runelite.api.Skill;
+import net.runelite.api.*;
 import net.runelite.api.events.ClientTick;
 import net.runelite.api.events.GameStateChanged;
 import net.runelite.api.events.GameTick;
 import net.runelite.api.events.MenuEntryAdded;
 import net.runelite.client.callback.ClientThread;
+import net.runelite.client.chat.ChatMessageBuilder;
+import net.runelite.client.chat.ChatMessageManager;
+import net.runelite.client.chat.QueuedMessage;
 import net.runelite.client.config.ConfigManager;
 import net.runelite.client.eventbus.EventBus;
 import net.runelite.client.eventbus.Subscribe;
@@ -64,6 +64,9 @@ public class SocketHealingPlugin extends Plugin {
     @Inject
     private EventBus eventBus;
 
+    @Inject
+    private ChatMessageManager chatMessageManager;
+
     private Map<String, SocketHealingPlayer> partyMembers = new TreeMap<>();
 
     private int lastRefresh;
@@ -91,17 +94,28 @@ public class SocketHealingPlugin extends Plugin {
 
     @Subscribe
     public void onConfigChanged(ConfigChanged e) {
-        if(!config.hpPlayerNames().equals("")) {
-            playerNames.clear();
-            byte b;
-            int i;
-            String[] arrayOfString;
-            for (i = (arrayOfString = config.hpPlayerNames().split(",")).length, b = 0; b < i; ) {
-                String str = arrayOfString[b];
-                str = str.trim();
-                if (!"".equals(str))
-                    playerNames.add(str.toLowerCase());
-                b++;
+        if(e.getGroup().equals("sockethealing")) {
+            if (!config.hpPlayerNames().equals("")) {
+                playerNames.clear();
+                byte b;
+                int i;
+                String[] arrayOfString;
+                for (i = (arrayOfString = config.hpPlayerNames().split(",")).length, b = 0; b < i; ) {
+                    String str = arrayOfString[b];
+                    str = str.trim();
+                    if (!"".equals(str))
+                        playerNames.add(str.toLowerCase());
+                    b++;
+                }
+            }
+
+            if (e.getKey().equals("setHighestPriority")) {
+                socketHealingOverlay.setLayer(config.setHighestPriority() ? OverlayLayer.ABOVE_WIDGETS : OverlayLayer.ABOVE_SCENE);
+                ChatMessageBuilder message = (new ChatMessageBuilder()).append(Color.MAGENTA, "Re-load the plugin to change overlay layer!");
+                this.chatMessageManager.queue(QueuedMessage.builder()
+                        .type(ChatMessageType.ITEM_EXAMINE)
+                        .runeLiteFormattedMessage(message.build())
+                        .build());
             }
         }
     }
@@ -178,16 +192,6 @@ public class SocketHealingPlugin extends Plugin {
         return partyMembers;
     }
 
-    /*@Subscribe
-    private void onClientTick(ClientTick event) {
-        if (client.isMirrored() && !mirrorMode) {
-            socketHealingOverlay.setLayer(OverlayLayer.AFTER_MIRROR);
-            overlayManager.remove(socketHealingOverlay);
-            overlayManager.add(socketHealingOverlay);
-            mirrorMode = true;
-        }
-    }*/
-
     @Subscribe
     public void onMenuEntryAdded(MenuEntryAdded event) {
         if (config.hpMenu()) {
@@ -212,6 +216,46 @@ public class SocketHealingPlugin extends Plugin {
                     String hpAdded = ColorUtil.prependColorTag(" - " + playerHealth, color);
                     menuEntry.setTarget(event.getTarget() + hpAdded);
                     client.setMenuEntries(menuEntries);
+                }
+            }
+        }
+    }
+
+    @Subscribe
+    public void onClientTick(ClientTick event) {
+        /*if (client.isMirrored() && !mirrorMode) {
+            socketHealingOverlay.setLayer(OverlayLayer.AFTER_MIRROR);
+            overlayManager.remove(socketHealingOverlay);
+            overlayManager.add(socketHealingOverlay);
+            mirrorMode = true;
+        }*/
+
+        if (client.getSelectedSpellName() != null && Text.removeTags(client.getSelectedSpellName()).equalsIgnoreCase("heal other") && config.healOtherMES()) {
+            String lowestHpName = "";
+            int lowestHp = 130;
+            MenuEntry[] menuEntries = client.getMenuEntries();
+
+            for (MenuEntry me : menuEntries) {
+                String option = Text.removeTags(me.getOption()).toLowerCase();
+                String target = Text.removeTags(me.getTarget()).toLowerCase();
+                if (option.contains("cast") && target.contains("heal other ->")) {
+                    for (String playerName : getPartyMembers().keySet()) {
+                        if(target.contains(playerName.toLowerCase())) {
+                            if(partyMembers.get(playerName).getHealth() < lowestHp) {
+                                lowestHpName = playerName;
+                                lowestHp = partyMembers.get(playerName).getHealth();
+                            }
+                            break;
+                        }
+                    }
+                }
+            }
+
+            for (MenuEntry me : menuEntries) {
+                String option = Text.removeTags(me.getOption()).toLowerCase();
+                String target = Text.removeTags(me.getTarget()).toLowerCase();
+                if (option.contains("cast") && target.contains("heal other ->") && !target.contains(lowestHpName.toLowerCase())) {
+                    me.setDeprioritized(true);
                 }
             }
         }
