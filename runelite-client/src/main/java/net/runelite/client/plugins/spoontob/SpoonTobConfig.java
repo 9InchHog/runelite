@@ -1446,6 +1446,18 @@ public interface SpoonTobConfig extends Config {
         return false;
     }
 
+    @ConfigItem(
+            position = 37,
+            keyName = "deletePillars",
+            name = "Delete Pillars",
+            description = "Delete the pillars at verzik, replacing them with tile outlines <br> " +
+                    "Turns green on tick 13",
+            section = verzik
+    )
+    default boolean deletePillars() {
+        return false;
+    }
+
     //------------------------------------------------------------//
     // Misc
     //------------------------------------------------------------//
