@@ -85,9 +85,20 @@ public class SocketDefencePlugin extends Plugin {
     public SpritePixels vuln = null;
     public boolean vulnHit;
     public boolean isInCm = false;
-    public ArrayList<String> bossList = new ArrayList<>(Arrays.asList("Corporeal Beast", "General Graardor", "K'ril Tsutsaroth", "Kalphite Queen", "The Maiden of Sugadinti",
-            "Xarpus", "Great Olm (Left claw)", "Tekton", "Tekton (enraged)", "Callisto"));
+    public ArrayList<String> bossList = new ArrayList<>(Arrays.asList(
+            "Abyssal Sire", "Callisto", "Cerberus", "Chaos Elemental", "Corporeal Beast", "General Graardor", "Giant Mole",
+            "Kalphite Queen", "King Black Dragon", "K'ril Tsutsaroth", "Sarachnis", "Venenatis", "Vet'ion", "Vet'ion Reborn",
+            "The Maiden of Sugadinti", "Xarpus", "Sotetseg", "Nylocas Vasilias",
+            "Great Olm (Left claw)", "Tekton", "Tekton (enraged)"));
     public boolean hmXarpus = false;
+
+    private static final int MAIDEN_REGION = 12613;
+    private static final int BLOAT_REGION = 13125;
+    private static final int NYLOCAS_REGION = 13122;
+    private static final int SOTETSEG_REGION = 13123;
+    private static final int SOTETSEG_MAZE_REGION = 13379;
+    private static final int XARPUS_REGION = 12612;
+    private static final int VERZIK_REGION = 12611;
 
     private boolean mirrorMode;
 
@@ -156,7 +167,7 @@ public class SocketDefencePlugin extends Plugin {
         Actor interacted = Objects.requireNonNull(client.getLocalPlayer()).getInteracting();
         String targetName = interacted.getName();
 
-        if(!(targetName.contains("Maiden") || targetName.contains("Sotetseg") || targetName.contains("Xarpus")))
+        if(!(targetName.contains("Maiden") || targetName.contains("Sotetseg") || targetName.contains("Xarpus") || targetName.contains("Nylocas Vasilias")))
             return;
 
         Optional<Plugin> o = pluginManager.getPlugins().stream().filter(p->p.getName().equals("damagedrops")).findAny();
@@ -250,6 +261,10 @@ public class SocketDefencePlugin extends Plugin {
                 } else {
                     specWep = "";
                 }
+
+                if (animation == 1816 && boss.equalsIgnoreCase("sotetseg") && (isInOverWorld() || isInUnderWorld())) {
+                    bossDef = 250;
+                }
             }
         }
     }
@@ -277,7 +292,7 @@ public class SocketDefencePlugin extends Plugin {
         NPC npc = (NPC) event.getActor();
 
         //my addition
-        if(npc.getName().contains("Maiden") || npc.getName().contains("Sotetseg") || npc.getName().contains("Xarpus"))
+        if(npc.getName().contains("Maiden") || npc.getName().contains("Sotetseg") || npc.getName().contains("Xarpus") || npc.getName().contains("Nylocas Vasilias"))
             return;
 
 
@@ -302,11 +317,7 @@ public class SocketDefencePlugin extends Plugin {
 
     @Subscribe
     public void onNpcSpawned(NpcSpawned event) {
-        if (event.getNpc().getId() >= 10770 && event.getNpc().getId() <= 10772) {
-            hmXarpus = true;
-        } else {
-            hmXarpus = false;
-        }
+        hmXarpus = event.getNpc().getId() >= 10770 && event.getNpc().getId() <= 10772;
     }
 
     @Subscribe
@@ -334,41 +345,83 @@ public class SocketDefencePlugin extends Plugin {
                 String weapon = data.getString("weapon");
                 int hit = data.getInt("hit");
 
-                if(((bossName.equals("Tekton") || bossName.contains("Great Olm")) && this.client.getVar(Varbits.IN_RAID) != 1) ||
-                        ((bossName.contains("The Maiden of Sugadinti") || bossName.contains("Xarpus")) && this.client.getVar(Varbits.THEATRE_OF_BLOOD) != 2)){
+                if(((bossName.equals("Tekton") || bossName.contains("Great Olm")) && client.getVar(Varbits.IN_RAID) != 1) ||
+                        ((bossName.contains("The Maiden of Sugadinti") || bossName.contains("Xarpus") || bossName.contains("Sotetseg")
+                                || bossName.contains("Nylocas Vasilias")) && client.getVar(Varbits.THEATRE_OF_BLOOD) != 2)){
                     return;
                 }
                 if (boss.equals("") || bossDef == -1 || !boss.equals(bossName)) {
-                    if (bossName.equals("Corporeal Beast")) {
-                        bossDef = 310;
-                    } else if (bossName.equals("General Graardor")) {
-                        bossDef = 250;
-                    } else if (bossName.equals("K'ril Tsutsaroth")) {
-                        bossDef = 270;
-                    } else if (bossName.equals("Kalphite Queen")) {
-                        bossDef = 300;
-                    } else if (bossName.equals("Callisto")){
-                        bossDef = 440;
-                    } else if (bossName.equals("The Maiden of Sugadinti")) {
-                        bossDef = 200;
-                    } else if (bossName.equals("Xarpus")) {
-                        if (hmXarpus){
-                            bossDef = 200;
-                        } else {
+                    switch (bossName) {
+                        case "Abyssal Sire":
                             bossDef = 250;
-                        }
-                    } else if (bossName.equals("Great Olm (Left claw)")) {
-                        bossDef = 175 * (1 + (.01 * (this.client.getVarbitValue(5424) - 1)));
+                            break;
+                        case "Callisto":
+                            bossDef = 440;
+                            break;
+                        case "Cerberus":
+                            bossDef = 110;
+                            break;
+                        case "Chaos Elemental":
+                            bossDef = 270;
+                            break;
+                        case "Corporeal Beast":
+                            bossDef = 310;
+                            break;
+                        case "General Graardor":
+                            bossDef = 250;
+                            break;
+                        case "Giant Mole":
+                            bossDef = 200;
+                            break;
+                        case "Kalphite Queen":
+                            bossDef = 300;
+                            break;
+                        case "King Black Dragon":
+                            bossDef = 240;
+                            break;
+                        case "K'ril Tsutsaroth":
+                            bossDef = 270;
+                            break;
+                        case "Sarachnis":
+                            bossDef = 150;
+                            break;
+                        case "Venenatis":
+                            bossDef = 490;
+                            break;
+                        case "Vet'ion":
+                        case "Vet'ion Reborn":
+                            bossDef = 395;
+                            break;
+                        case "The Maiden of Sugadinti":
+                            bossDef = 200;
+                            break;
+                        case "Xarpus":
+                            if (hmXarpus) {
+                                bossDef = 200;
+                            } else {
+                                bossDef = 250;
+                            }
+                            break;
+                        case "Sotetseg":
+                            bossDef = 250;
+                            break;
+                        case "Nylocas Vasilias":
+                            bossDef = 50;
+                            break;
+                        case "Great Olm (Left claw)":
+                            bossDef = 175 * (1 + (.01 * (client.getVarbitValue(5424) - 1)));
 
-                        if (isInCm) {
-                            bossDef = bossDef * 1.5;
-                        }
-                    } else if (bossName.equals("Tekton")) {
-                        bossDef = 205 * (1 + (.01 * (this.client.getVarbitValue(5424) - 1)));
+                            if (isInCm) {
+                                bossDef = bossDef * 1.5;
+                            }
+                            break;
+                        case "Tekton":
+                            bossDef = 205 * (1 + (.01 * (client.getVarbitValue(5424) - 1)));
 
-                        if (isInCm) {
-                            bossDef = bossDef * 1.2;
-                        }
+                            if (isInCm) {
+                                bossDef = bossDef * 1.2;
+                            }
+                            break;
                     }
                     boss = bossName;
                 }
@@ -446,8 +499,8 @@ public class SocketDefencePlugin extends Plugin {
     @Subscribe
     private void onVarbitChanged(VarbitChanged event) {
         if ((client.getVar(Varbits.IN_RAID) != 1 && (boss.equals("Tekton") || boss.equals("Great Olm (Left claw)")))
-                || (boss.equals("The Maiden of Sugadinti") && getInstanceRegionId() != TobRegions.MAIDEN.getRegionId())
-                || (boss.equals("Xarpus") && getInstanceRegionId() != TobRegions.XARPUS.getRegionId())) {
+                || (boss.equals("The Maiden of Sugadinti") && isInMaiden()) || (boss.equals("Nylocas Vasilias") && isInNylo())
+                || (boss.equals("Sotetseg") && (isInOverWorld() || isInUnderWorld())) || (boss.equals("Xarpus") && isInXarpus())) {
             reset();
         }
     }
@@ -478,28 +531,32 @@ public class SocketDefencePlugin extends Plugin {
         isInCm = config.cm();
     }
 
-    public int getInstanceRegionId() {
-        return WorldPoint.fromLocalInstance(this.client, this.client.getLocalPlayer().getLocalLocation()).getRegionID();
+    private boolean isInMaiden() {
+        return client.getMapRegions().length > 0 && client.getMapRegions()[0] == MAIDEN_REGION;
     }
 
-    public enum TobRegions {
-        MAIDEN(12613),
-        BLOAT(13125),
-        NYLOCAS(13122),
-        SOTETSEG(13123),
-        SOTETSEG_MAZE(13379),
-        XARPUS(12612),
-        VERZIK(12611);
+    private boolean isInBloat() {
+        return client.getMapRegions().length > 0 && client.getMapRegions()[0] == BLOAT_REGION;
+    }
 
-        private final int regionId;
+    private boolean isInNylo() {
+        return client.getMapRegions().length > 0 && client.getMapRegions()[0] == NYLOCAS_REGION;
+    }
 
-        TobRegions(int regionId) {
-            this.regionId = regionId;
-        }
+    private boolean isInOverWorld() {
+        return client.getMapRegions().length > 0 && client.getMapRegions()[0] == SOTETSEG_REGION;
+    }
 
-        public int getRegionId() {
-            return this.regionId;
-        }
+    private boolean isInUnderWorld() {
+        return client.getMapRegions().length > 0 && client.getMapRegions()[0] == SOTETSEG_MAZE_REGION;
+    }
+
+    private boolean isInXarpus() {
+        return client.getMapRegions().length > 0 && client.getMapRegions()[0] == XARPUS_REGION;
+    }
+
+    private boolean isInVerzik() {
+        return client.getMapRegions().length > 0 && client.getMapRegions()[0] == VERZIK_REGION;
     }
 
     /*@Subscribe
