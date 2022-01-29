@@ -499,8 +499,8 @@ public class SocketDefencePlugin extends Plugin {
     @Subscribe
     private void onVarbitChanged(VarbitChanged event) {
         if ((client.getVar(Varbits.IN_RAID) != 1 && (boss.equals("Tekton") || boss.equals("Great Olm (Left claw)")))
-                || (boss.equals("The Maiden of Sugadinti") && isInMaiden()) || (boss.equals("Nylocas Vasilias") && isInNylo())
-                || (boss.equals("Sotetseg") && (isInOverWorld() || isInUnderWorld())) || (boss.equals("Xarpus") && isInXarpus())) {
+                || (boss.equals("The Maiden of Sugadinti") && !isInMaiden()) || (boss.equals("Nylocas Vasilias") && !isInNylo())
+                || (boss.equals("Sotetseg") && !isInOverWorld() && !isInUnderWorld()) || (boss.equals("Xarpus") && !isInXarpus())) {
             reset();
         }
     }
