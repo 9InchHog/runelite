@@ -1,6 +1,7 @@
 package net.runelite.client.plugins.socket.plugins.socketdefence;
 
 import com.google.inject.Provides;
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.*;
 import net.runelite.api.coords.WorldPoint;
@@ -22,6 +23,7 @@ import net.runelite.client.plugins.socket.packet.SocketBroadcastPacket;
 import net.runelite.client.plugins.socket.packet.SocketMembersUpdate;
 import net.runelite.client.plugins.socket.packet.SocketReceivePacket;
 import net.runelite.client.plugins.socket.packet.SocketShutdown;
+import net.runelite.client.plugins.tobsounds.TobSoundsPlugin;
 import net.runelite.client.ui.overlay.OverlayLayer;
 import net.runelite.client.ui.overlay.OverlayManager;
 import net.runelite.client.ui.overlay.infobox.InfoBoxManager;
@@ -29,7 +31,9 @@ import net.runelite.client.util.ColorUtil;
 import org.pf4j.Extension;
 
 import javax.inject.Inject;
+import javax.sound.sampled.*;
 import java.awt.*;
+import java.io.BufferedInputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Objects;
@@ -88,7 +92,7 @@ public class SocketDefencePlugin extends Plugin {
     public ArrayList<String> bossList = new ArrayList<>(Arrays.asList(
             "Abyssal Sire", "Callisto", "Cerberus", "Chaos Elemental", "Corporeal Beast", "General Graardor", "Giant Mole",
             "Kalphite Queen", "King Black Dragon", "K'ril Tsutsaroth", "Sarachnis", "Venenatis", "Vet'ion", "Vet'ion Reborn",
-            "The Maiden of Sugadinti", "Xarpus", "Sotetseg", "Nylocas Vasilias",
+            "The Maiden of Sugadinti", "Pestilent Bloat", "Nylocas Vasilias", "Sotetseg", "Xarpus",
             "Great Olm (Left claw)", "Tekton", "Tekton (enraged)"));
     public boolean hmXarpus = false;
 
@@ -99,6 +103,8 @@ public class SocketDefencePlugin extends Plugin {
     private static final int SOTETSEG_MAZE_REGION = 13379;
     private static final int XARPUS_REGION = 12612;
     private static final int VERZIK_REGION = 12611;
+
+    boolean bloatDown = false;
 
     private boolean mirrorMode;
 
@@ -127,6 +133,7 @@ public class SocketDefencePlugin extends Plugin {
         vuln = null;
         vulnHit = false;
         isInCm = config.cm();
+        bloatDown = false;
     }
 
     @Provides
@@ -267,6 +274,14 @@ public class SocketDefencePlugin extends Plugin {
                 }
             }
         }
+
+        if (event.getActor() instanceof NPC) {
+            NPC npc = (NPC) event.getActor();
+            String name = npc.getName();
+            if (name != null && name.equalsIgnoreCase("pestilent bloat")) {
+                bloatDown = npc.getAnimation() == 8082;
+            }
+        }
     }
 
     @Subscribe
@@ -317,7 +332,8 @@ public class SocketDefencePlugin extends Plugin {
 
     @Subscribe
     public void onNpcSpawned(NpcSpawned event) {
-        hmXarpus = event.getNpc().getId() >= 10770 && event.getNpc().getId() <= 10772;
+        NPC npc = event.getNpc();
+        hmXarpus = npc.getId() >= 10770 && npc.getId() <= 10772;
     }
 
     @Subscribe
@@ -346,8 +362,8 @@ public class SocketDefencePlugin extends Plugin {
                 int hit = data.getInt("hit");
 
                 if(((bossName.equals("Tekton") || bossName.contains("Great Olm")) && client.getVar(Varbits.IN_RAID) != 1) ||
-                        ((bossName.contains("The Maiden of Sugadinti") || bossName.contains("Xarpus") || bossName.contains("Sotetseg")
-                                || bossName.contains("Nylocas Vasilias")) && client.getVar(Varbits.THEATRE_OF_BLOOD) != 2)){
+                        ((bossName.contains("The Maiden of Sugadinti") || bossName.contains("Pestilent Bloat") || bossName.contains("Nylocas Vasilias")
+                                || bossName.contains("Sotetseg") || bossName.contains("Xarpus")) && client.getVar(Varbits.THEATRE_OF_BLOOD) != 2)){
                     return;
                 }
                 if (boss.equals("") || bossDef == -1 || !boss.equals(bossName)) {
@@ -395,18 +411,21 @@ public class SocketDefencePlugin extends Plugin {
                         case "The Maiden of Sugadinti":
                             bossDef = 200;
                             break;
+                        case "Pestilent Bloat":
+                            bossDef = 100;
+                            break;
+                        case "Nylocas Vasilias":
+                            bossDef = 50;
+                            break;
+                        case "Sotetseg":
+                            bossDef = 250;
+                            break;
                         case "Xarpus":
                             if (hmXarpus) {
                                 bossDef = 200;
                             } else {
                                 bossDef = 250;
                             }
-                            break;
-                        case "Sotetseg":
-                            bossDef = 250;
-                            break;
-                        case "Nylocas Vasilias":
-                            bossDef = 50;
                             break;
                         case "Great Olm (Left claw)":
                             bossDef = 175 * (1 + (.01 * (client.getVarbitValue(5424) - 1)));
@@ -435,13 +454,15 @@ public class SocketDefencePlugin extends Plugin {
                         bossDef -= bossDef * .30;
                     }
                 }else if (weapon.equals("bgs")) {
-                    if(hit == 0){
-                        if(client.getVar(Varbits.IN_RAID) == 1 && boss.equals("Tekton")) {
+                    if (hit == 0){
+                        if (client.getVar(Varbits.IN_RAID) == 1 && boss.equals("Tekton")) {
                             bossDef -= 10;
                         }
-                    }else {
+                    } else {
                         if (boss.equals("Corporeal Beast")) {
                             bossDef -= hit * 2;
+                        } else if (isInBloat() && boss.equals("Pestilent Bloat") && !bloatDown) {
+                             bossDef -= hit * 2;
                         } else {
                             bossDef -= hit;
                         }
@@ -499,8 +520,9 @@ public class SocketDefencePlugin extends Plugin {
     @Subscribe
     private void onVarbitChanged(VarbitChanged event) {
         if ((client.getVar(Varbits.IN_RAID) != 1 && (boss.equals("Tekton") || boss.equals("Great Olm (Left claw)")))
-                || (boss.equals("The Maiden of Sugadinti") && !isInMaiden()) || (boss.equals("Nylocas Vasilias") && !isInNylo())
-                || (boss.equals("Sotetseg") && !isInOverWorld() && !isInUnderWorld()) || (boss.equals("Xarpus") && !isInXarpus())) {
+                || (boss.equals("The Maiden of Sugadinti") && !isInMaiden()) || (boss.equals("Pestilent Bloat") && !isInBloat())
+                || (boss.equals("Nylocas Vasilias") && !isInNylo()) || (boss.equals("Sotetseg") && !isInOverWorld() && !isInUnderWorld())
+                || (boss.equals("Xarpus") && !isInXarpus())) {
             reset();
         }
     }

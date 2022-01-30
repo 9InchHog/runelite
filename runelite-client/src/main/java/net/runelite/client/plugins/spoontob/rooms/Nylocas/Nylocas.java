@@ -960,17 +960,20 @@ public class Nylocas extends Room {
                 && nylocasBoss != null && event.getMenuTarget().contains(BOSS_NYLO) && event.getMenuAction() == MenuAction.NPC_SECOND_OPTION && weaponStyle != null) {
             switch (weaponStyle) {
                 case MAGIC:
-                    if (nylocasBoss.getId() != NpcID.NYLOCAS_VASILIAS_8356 && nylocasBoss.getId() != 10788 && nylocasBoss.getId() != 10809) {
+                    if (nylocasBoss.getId() != NpcID.NYLOCAS_VASILIAS_8356 && nylocasBoss.getId() != NpcID.NYLOCAS_VASILIAS_10788
+                            && nylocasBoss.getId() != NpcID.NYLOCAS_VASILIAS_10809) {
                        event.consume();
                     }
                     break;
                 case MELEE:
-                    if (nylocasBoss.getId() != NpcID.NYLOCAS_VASILIAS_8355 && nylocasBoss.getId() != 10787 && nylocasBoss.getId() != 10808) {
+                    if (nylocasBoss.getId() != NpcID.NYLOCAS_VASILIAS_8355 && nylocasBoss.getId() != NpcID.NYLOCAS_VASILIAS_10787
+                            && nylocasBoss.getId() != NpcID.NYLOCAS_VASILIAS_10808) {
                         event.consume();
                     }
                     break;
                 case RANGE:
-                    if (nylocasBoss.getId() != NpcID.NYLOCAS_VASILIAS_8357 && nylocasBoss.getId() != 10789 && nylocasBoss.getId() != 10810) {
+                    if (nylocasBoss.getId() != NpcID.NYLOCAS_VASILIAS_8357 && nylocasBoss.getId() != NpcID.NYLOCAS_VASILIAS_10789
+                            && nylocasBoss.getId() != NpcID.NYLOCAS_VASILIAS_10810) {
                         event.consume();
                     }
                     break;
