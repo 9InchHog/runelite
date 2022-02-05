@@ -1135,10 +1135,10 @@ public class SpoonEzSwapsPlugin extends Plugin {
 
 		updateitemCounts();
 
-		Widget createMenu = client.getWidget(458, 1);
-		Widget demonSendBank = client.getWidget(219, 1);
-		Widget demonPayment = client.getWidget(231, 5);
-		if (config.afkConstruction()) {
+		if (config.afkConstruction() && client.getVarbitValue(2176) == 1) {
+			Widget createMenu = client.getWidget(458, 1);
+			Widget demonSendBank = client.getWidget(219, 1);
+			Widget demonPayment = client.getWidget(231, 5);
 			if (demonSendBank != null && !demonSendBank.isHidden() && !demonSendBank.isSelfHidden()) {
 				for (Widget child : demonSendBank.getDynamicChildren()) {
 					if (child.getText().contains("Really remove it?") || child.getText().contains("Repeat last task?")) {
