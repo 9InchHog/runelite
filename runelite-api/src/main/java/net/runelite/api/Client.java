@@ -1732,6 +1732,13 @@ public interface Client extends GameEngine
 	void setFriendsHidden(boolean state);
 
 	/**
+	 * Sets whether or not friends 2D elements are hidden.
+	 *
+	 * @param state the new friends hidden state
+	 */
+	void setFriendsHidden2D(boolean state);
+
+	/**
 	 * Sets whether or not friends chat members are hidden.
 	 *
 	 * @param state the new friends chat member hidden state
@@ -1739,11 +1746,25 @@ public interface Client extends GameEngine
 	void setFriendsChatMembersHidden(boolean state);
 
 	/**
+	 * Sets whether or not friends chat members 2D elements are hidden.
+	 *
+	 * @param state the new friends chat member hidden state
+	 */
+	void setFriendsChatMembersHidden2D(boolean state);
+
+	/**
 	 * Sets whether or not clan members are hidden.
 	 *
 	 * @param state the new clan chat member hidden state
 	 */
 	void setClanChatMembersHidden(boolean state);
+
+	/**
+	 * Sets whether or not clan chat members 2D elements are hidden.
+	 *
+	 * @param state the new friends chat member hidden state
+	 */
+	void setClanChatMembersHidden2D(boolean state);
 
 	/**
 	 * Sets whether or not ignored players are hidden.

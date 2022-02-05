@@ -68,6 +68,16 @@ public interface EntityHiderConfig extends Config
 	}
 
 	@ConfigItem(
+			position = 3,
+			keyName = "hideFriends2D",
+			name = "Hide Friends 2D",
+			description = "Configures whether or not friends 2D elements are hidden"
+	)
+	default boolean hideFriends2D() {
+		return false;
+	}
+
+	@ConfigItem(
 		position = 4,
 		keyName = "hideClanMates", // is actually friends chat
 		name = "Hide Friends Chat members",
@@ -79,12 +89,34 @@ public interface EntityHiderConfig extends Config
 	}
 
 	@ConfigItem(
+			position = 4,
+			keyName = "hideFriendsChatMembers2D",
+			name = "Hide Friends Chat members 2D",
+			description = "Configures whether or not friends chat members 2D elements are hidden"
+	)
+	default boolean hideFriendsChatMembers2D()
+	{
+		return false;
+	}
+
+	@ConfigItem(
 		position = 5,
 		keyName = "hideClanChatMembers",
 		name = "Hide Clan Chat members",
 		description = "Configures whether or not clan chat members are hidden"
 	)
 	default boolean hideClanChatMembers()
+	{
+		return false;
+	}
+
+	@ConfigItem(
+			position = 5,
+			keyName = "hideClanChatMembers2D",
+			name = "Hide Clan Chat members 2D",
+			description = "Configures whether or not clan chat members 2D elements are hidden"
+	)
+	default boolean hideClanChatMembers2D()
 	{
 		return false;
 	}
