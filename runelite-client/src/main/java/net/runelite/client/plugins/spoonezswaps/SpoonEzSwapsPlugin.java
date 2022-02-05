@@ -1135,7 +1135,7 @@ public class SpoonEzSwapsPlugin extends Plugin {
 
 		updateitemCounts();
 
-		if (config.afkConstruction() && client.getVarbitValue(2176) == 1) {
+		if (config.afkConstruction()) {
 			Widget createMenu = client.getWidget(458, 1);
 			Widget demonSendBank = client.getWidget(219, 1);
 			Widget demonPayment = client.getWidget(231, 5);
