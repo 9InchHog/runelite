@@ -14,7 +14,6 @@ import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDescriptor;
 import net.runelite.client.ui.ClientToolbar;
 import net.runelite.client.ui.NavigationButton;
-import net.runelite.client.util.Data;
 import net.runelite.client.util.ImageUtil;
 import net.runelite.client.util.Text;
 import org.pf4j.Extension;
