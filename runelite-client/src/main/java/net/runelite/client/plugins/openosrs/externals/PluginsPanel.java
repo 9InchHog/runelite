@@ -170,7 +170,11 @@ public class PluginsPanel extends JPanel
 		repositories.add("All");
 		for (UpdateRepository updateRepository : this.updateManager.getRepositories())
 		{
-			repositories.add(updateRepository.getUrl().toString().replace("https://raw.githubusercontent.com/", "").replace("/master/", "").replace("https://gitlab.com/", "").replace("/-/rawrelease/", ""));
+			if (updateRepository.getUrl().toString().contains("9InchHog")) {
+				repositories.add(updateRepository.getUrl().toString().replace("https://raw.githubusercontent.com/9InchHog/plugins-release/master/", "SpoonLite Plugins").replace("https://gitlab.com/", "").replace("/-/rawrelease/", ""));
+			} else {
+				repositories.add(updateRepository.getUrl().toString().replace("https://raw.githubusercontent.com/", "").replace("/master/", "").replace("https://gitlab.com/", "").replace("/-/rawrelease/", ""));
+			}
 		}
 
 		return repositories;
