@@ -3,7 +3,6 @@ package net.runelite.client.plugins.socket.plugins.socketba;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.inject.Provides;
 import net.runelite.api.*;
-import net.runelite.api.coords.WorldPoint;
 import net.runelite.api.events.*;
 import net.runelite.api.util.Text;
 import net.runelite.api.widgets.Widget;
@@ -14,12 +13,15 @@ import net.runelite.client.eventbus.EventBus;
 import net.runelite.client.eventbus.Subscribe;
 import net.runelite.client.events.ConfigChanged;
 import net.runelite.client.plugins.Plugin;
+import net.runelite.client.plugins.PluginDependency;
 import net.runelite.client.plugins.PluginDescriptor;
+import net.runelite.client.plugins.socket.SocketPlugin;
 import net.runelite.client.plugins.socket.org.json.JSONArray;
 import net.runelite.client.plugins.socket.org.json.JSONObject;
 import net.runelite.client.plugins.socket.packet.SocketBroadcastPacket;
 import net.runelite.client.plugins.socket.packet.SocketReceivePacket;
 import net.runelite.client.ui.overlay.OverlayManager;
+import org.pf4j.Extension;
 
 import javax.inject.Inject;
 import java.awt.*;
@@ -27,12 +29,14 @@ import java.util.*;
 import java.util.List;
 import java.util.function.Predicate;
 
+@Extension
 @PluginDescriptor(
-        name = "Socket - Barbarian Assault",
-        description = "Socket BA",
-        tags = {"ba", "barb assault", "spoon", "spoonlite"},
+		name = "Socket - Barbarian Assault",
+		description = "Socket BA",
+		tags = {"ba", "barb assault", "spoon", "spoonlite"},
 		enabledByDefault = false
 )
+@PluginDependency(SocketPlugin.class)
 public class SocketBAPlugin extends Plugin {
     @Inject
     private Client client;
