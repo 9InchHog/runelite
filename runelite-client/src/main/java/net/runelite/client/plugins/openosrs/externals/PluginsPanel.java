@@ -170,6 +170,7 @@ public class PluginsPanel extends JPanel
 		repositories.add("All");
 		for (UpdateRepository updateRepository : this.updateManager.getRepositories())
 		{
+			System.out.println("Update repository" + updateRepository.getUrl().toString());
 			if (updateRepository.getUrl().toString().contains("9InchHog")) {
 				repositories.add(updateRepository.getUrl().toString().replace("https://raw.githubusercontent.com/9InchHog/plugins-release/master/", "SpoonLite Plugins").replace("https://gitlab.com/", "").replace("/-/rawrelease/", ""));
 			} else {
@@ -373,8 +374,9 @@ public class PluginsPanel extends JPanel
 				String filter = String.valueOf(filterComboBox.getSelectedItem());
 				for (UpdateRepository updateRepository : updateManager.getRepositories())
 				{
-					if (filter.equals(updateRepository.getUrl().toString().replace("https://raw.githubusercontent.com/", "").replace("/master/", "").replace("https://gitlab.com/", "").replace("/-/rawrelease/", "")) &&
-						pluginInfo.getRepositoryId().equals(updateRepository.getId()))
+					if ((filter.equals(updateRepository.getUrl().toString().replace("https://raw.githubusercontent.com/", "").replace("/master/", "").replace("https://gitlab.com/", "").replace("/-/rawrelease/", ""))
+							|| filter.equals(updateRepository.getUrl().toString().replace("https://raw.githubusercontent.com/9InchHog/plugins-release/master/", "SpoonLite Plugins")))
+							&& pluginInfo.getRepositoryId().equals(updateRepository.getId()))
 					{
 						filtered = false;
 					}
@@ -431,8 +433,9 @@ public class PluginsPanel extends JPanel
 				String filter = String.valueOf(filterComboBox.getSelectedItem());
 				for (UpdateRepository updateRepository : updateManager.getRepositories())
 				{
-					if (filter.equals(updateRepository.getUrl().toString().replace("https://raw.githubusercontent.com/", "").replace("/master/", "").replace("https://gitlab.com/", "").replace("/-/rawrelease/", "")) &&
-						pluginInfo.getRepositoryId().equals(updateRepository.getId()))
+					if ((filter.equals(updateRepository.getUrl().toString().replace("https://raw.githubusercontent.com/", "").replace("/master/", "").replace("https://gitlab.com/", "").replace("/-/rawrelease/", ""))
+							|| filter.equals(updateRepository.getUrl().toString().replace("https://raw.githubusercontent.com/9InchHog/plugins-release/master/", "SpoonLite Plugins")))
+							&& pluginInfo.getRepositoryId().equals(updateRepository.getId()))
 					{
 						filtered = false;
 					}
