@@ -116,7 +116,7 @@ public class RepositoryBox extends JPanel
 			titleActions.add(support, BorderLayout.WEST);
 		}
 
-		if (!name.equals("OpenOSRS") && !name.equals("Plugin-Hub"))
+		if (!name.equals("OpenOSRS") && !name.equals("Plugin-Hub") && !name.equals("SpoonLite"))
 		{
 			JLabel install = new JLabel();
 			install.setIcon(DELETE_ICON);
@@ -171,7 +171,16 @@ public class RepositoryBox extends JPanel
 	{
 		if (url.contains("githubusercontent"))
 		{
-			url = url.replace("raw.githubusercontent", "github").replace("/master/", "");
+			if (url.contains("9InchHog")) {
+				url = url.replace("https://raw.githubusercontent.com/9InchHog/plugins-release/master/", "SpoonLite Plugins");
+			} else {
+				url = url.replace("raw.githubusercontent", "github").replace("/master/", "");
+			}
+		}
+
+		if (url.contains("gitlab"))
+		{
+			url = url.replace("https://gitlab.com/", "").replace("/-/raw/master/release/", "");
 		}
 
 		return url;

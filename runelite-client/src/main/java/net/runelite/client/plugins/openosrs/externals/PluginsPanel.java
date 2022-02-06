@@ -1,5 +1,6 @@
 package net.runelite.client.plugins.openosrs.externals;
 
+import com.splugins.sExternalPluginManager;
 import net.runelite.client.plugins.OPRSExternalPluginManager;
 import com.google.gson.JsonSyntaxException;
 import com.openosrs.client.events.OPRSPluginChanged;
@@ -169,7 +170,7 @@ public class PluginsPanel extends JPanel
 		repositories.add("All");
 		for (UpdateRepository updateRepository : this.updateManager.getRepositories())
 		{
-			repositories.add(updateRepository.getUrl().toString().replace("https://raw.githubusercontent.com/", "").replace("/master/", ""));
+			repositories.add(updateRepository.getUrl().toString().replace("https://raw.githubusercontent.com/", "").replace("/master/", "").replace("https://gitlab.com/", "").replace("/-/rawrelease/", ""));
 		}
 
 		return repositories;
@@ -368,7 +369,7 @@ public class PluginsPanel extends JPanel
 				String filter = String.valueOf(filterComboBox.getSelectedItem());
 				for (UpdateRepository updateRepository : updateManager.getRepositories())
 				{
-					if (filter.equals(updateRepository.getUrl().toString().replace("https://raw.githubusercontent.com/", "").replace("/master/", "")) &&
+					if (filter.equals(updateRepository.getUrl().toString().replace("https://raw.githubusercontent.com/", "").replace("/master/", "").replace("https://gitlab.com/", "").replace("/-/rawrelease/", "")) &&
 						pluginInfo.getRepositoryId().equals(updateRepository.getId()))
 					{
 						filtered = false;
@@ -426,7 +427,7 @@ public class PluginsPanel extends JPanel
 				String filter = String.valueOf(filterComboBox.getSelectedItem());
 				for (UpdateRepository updateRepository : updateManager.getRepositories())
 				{
-					if (filter.equals(updateRepository.getUrl().toString().replace("https://raw.githubusercontent.com/", "").replace("/master/", "")) &&
+					if (filter.equals(updateRepository.getUrl().toString().replace("https://raw.githubusercontent.com/", "").replace("/master/", "").replace("https://gitlab.com/", "").replace("/-/rawrelease/", "")) &&
 						pluginInfo.getRepositoryId().equals(updateRepository.getId()))
 					{
 						filtered = false;
@@ -495,6 +496,10 @@ public class PluginsPanel extends JPanel
 							protected void done()
 							{
 
+								if (pluginInfo.provider.equals(sExternalPluginManager.SPOONLITE))
+								{
+									externalPluginManager.sDisablePlugin(pluginInfo.id);
+								}
 								boolean status = false;
 								try
 								{
@@ -530,6 +535,10 @@ public class PluginsPanel extends JPanel
 						protected void done()
 						{
 
+							if (pluginInfo.provider.equals(sExternalPluginManager.SPOONLITE))
+							{
+								externalPluginManager.sEnablePlugin(pluginInfo.id);
+							}
 							boolean status = false;
 							try
 							{

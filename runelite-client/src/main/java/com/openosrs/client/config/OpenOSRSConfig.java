@@ -118,7 +118,7 @@ public interface OpenOSRSConfig extends Config
 	}
 
 	@ConfigItem(
-			keyName = "externalRepos",
+			keyName = "sExternalRepos",
 			name = "",
 			description = "",
 			hidden = true
@@ -129,7 +129,7 @@ public interface OpenOSRSConfig extends Config
 	}
 
 	@ConfigItem(
-			keyName = "externalRepos",
+			keyName = "sExternalRepos",
 			name = "",
 			description = "",
 			hidden = true
@@ -148,6 +148,25 @@ public interface OpenOSRSConfig extends Config
 	}
 
 	@ConfigItem(
+			keyName = "sGetDisabledPlugins",
+			name = "",
+			description = "",
+			hidden = true
+	)
+	default String sGetDisabledPlugins()
+	{
+		return "";
+	}
+
+	@ConfigItem(
+			keyName = "sGetDisabledPlugins",
+			name = "",
+			description = "",
+			hidden = true
+	)
+	void sSetDisabledPlugins(String val);
+
+	@ConfigItem(
 			keyName = "hideOprsManager",
 			name = "",
 			description = ""
@@ -156,14 +175,4 @@ public interface OpenOSRSConfig extends Config
 	{
 		return false;
 	}
-
-	/*@ConfigItem(
-			keyName = "hideSpoonManager",
-			name = "",
-			description = ""
-	)
-	default boolean hideSpoonManager()
-	{
-		return false;
-	}*/
 }

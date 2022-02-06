@@ -51,4 +51,9 @@ public enum OverlayLayer
 	 * Render overlay above all game elements
 	 */
 	ALWAYS_ON_TOP,
+
+	/**
+	 * Render overlay after mirror is produced
+	 */
+	AFTER_MIRROR,
 }

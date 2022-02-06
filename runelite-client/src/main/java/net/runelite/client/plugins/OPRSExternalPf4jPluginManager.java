@@ -8,6 +8,8 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
@@ -458,6 +460,19 @@ class OPRSExternalPf4jPluginManager extends DefaultPluginManager
 		// add plugin class loader to the list with class loaders
 		getPluginClassLoaders().put(pluginId, pluginClassLoader);
 
+		try
+		{
+			String hash = pluginHash(Files.readAllBytes(pluginPath));
+			if (hash != null)
+			{
+				OPRSExternalPluginManager.hashedPlugins.put(pluginId, hash);
+				log.debug("Plugin Hash '{}' '{}'", pluginId, hash);
+			}
+		}
+		catch (IOException ignored)
+		{
+		}
+
 		return pluginWrapper;
 	}
 
@@ -470,5 +485,24 @@ class OPRSExternalPf4jPluginManager extends DefaultPluginManager
 	private boolean isPluginEligibleForLoading(Path path)
 	{
 		return path.toFile().getName().endsWith(".jar");
+	}
+
+	private String pluginHash(byte[] file)
+	{
+		try
+		{
+			byte[] mdbytes = MessageDigest.getInstance("SHA-512").digest(file);
+			StringBuilder sb = new StringBuilder();
+			for (byte mdbyte : mdbytes)
+			{
+				sb.append(Integer.toString((mdbyte & 0xff) + 0x100, 16).substring(1));
+			}
+			return sb.toString().toUpperCase();
+		}
+		catch (NoSuchAlgorithmException e)
+		{
+			log.debug("No such algorithm for hashing");
+		}
+		return null;
 	}
 }
