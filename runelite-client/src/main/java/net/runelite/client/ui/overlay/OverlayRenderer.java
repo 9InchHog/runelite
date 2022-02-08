@@ -37,6 +37,8 @@ import java.util.List;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import javax.swing.SwingUtilities;
+
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.Client;
 import net.runelite.api.GameState;
@@ -110,6 +112,9 @@ public class OverlayRenderer extends MouseAdapter implements KeyListener
 	// focused overlay
 	private Overlay focusedOverlay;
 	private Overlay prevFocusedOverlay;
+
+	@Setter
+	private boolean shouldRender = true;
 
 	@Inject
 	private OverlayRenderer(
@@ -232,6 +237,11 @@ public class OverlayRenderer extends MouseAdapter implements KeyListener
 
 	private void renderOverlays(Graphics2D graphics, Collection<Overlay> overlays, OverlayLayer layer)
 	{
+		if (!shouldRender)
+		{
+			return;
+		}
+
 		if (overlays == null
 			|| overlays.isEmpty()
 			|| client.getGameState() != GameState.LOGGED_IN)
