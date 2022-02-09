@@ -29,14 +29,18 @@ import com.google.common.base.MoreObjects;
 import com.google.common.collect.ArrayListMultimap;
 import java.awt.Dimension;
 import java.awt.Point;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
 import java.util.function.Predicate;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
-import net.runelite.api.Client;
+import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.widgets.WidgetID;
 import net.runelite.api.widgets.WidgetItem;
 import net.runelite.client.config.ConfigGroup;
@@ -45,23 +49,14 @@ import net.runelite.client.config.RuneLiteConfig;
 import net.runelite.client.eventbus.Subscribe;
 import net.runelite.client.events.ConfigChanged;
 import net.runelite.client.events.PluginChanged;
-import net.runelite.client.plugins.OPRSExternalPluginManager;
 
 /**
  * Manages state of all game overlays
  */
 @Singleton
+@Slf4j
 public class OverlayManager
 {
-	@Inject
-	private Client client;
-
-	@Inject
-	private OPRSExternalPluginManager oprsExternalPluginManager;
-
-	@Getter
-	private Map<Overlay, OverlayLayer> originalLayers = new HashMap<>();
-
 	public static final String OPTION_CONFIGURE = "Configure";
 
 	private static final String OVERLAY_CONFIG_PREFERRED_LOCATION = "_preferredLocation";
@@ -96,7 +91,7 @@ public class OverlayManager
 	 * Insertion-order sorted set of overlays
 	 * All access to this must be guarded by a lock on this OverlayManager
 	 */
-	@Getter(AccessLevel.PUBLIC)
+	@Getter(AccessLevel.PACKAGE)
 	private final List<Overlay> overlays = new ArrayList<>();
 	@Getter
 	@Setter
@@ -170,19 +165,6 @@ public class OverlayManager
 		if (overlays.contains(overlay))
 		{
 			return false;
-		}
-
-		if (client.isMirrored()) {
-			if (overlay.getLayer() != OverlayLayer.MANUAL && overlay.getLayer() != OverlayLayer.AFTER_MIRROR) {
-				List<String> packageInfoMap = oprsExternalPluginManager.getPluginsPackages();
-				String[] packageName = overlay.getClass().getPackage().toString().split("\\.");
-				if (packageName.length > 4 && packageInfoMap.contains(packageName[4])) {
-					originalLayers.put(overlay, overlay.getLayer());
-					overlay.setLayer(OverlayLayer.AFTER_MIRROR);
-				}
-			}
-		} else if (overlay.getLayer() == OverlayLayer.AFTER_MIRROR && originalLayers.get(overlay) != null) {
-			overlay.setLayer(originalLayers.get(overlay));
 		}
 
 		// Add is always true
@@ -284,7 +266,7 @@ public class OverlayManager
 		overlay.revalidate();
 	}
 
-	synchronized public void rebuildOverlayLayers()
+	synchronized void rebuildOverlayLayers()
 	{
 		ArrayListMultimap<Object, Overlay> overlayMap = ArrayListMultimap.create();
 		for (final Overlay overlay : overlays)
@@ -306,7 +288,6 @@ public class OverlayManager
 				case ABOVE_SCENE:
 				case UNDER_WIDGETS:
 				case ALWAYS_ON_TOP:
-				case AFTER_MIRROR:
 					overlayMap.put(layer, overlay);
 					break;
 				case ABOVE_WIDGETS:
@@ -338,7 +319,18 @@ public class OverlayManager
 		final Dimension size = loadOverlaySize(overlay);
 		overlay.setPreferredSize(size);
 		final OverlayPosition position = loadOverlayPosition(overlay);
-		overlay.setPreferredPosition(position);
+		if (position != null)
+		{
+			if (overlay.getPosition() != OverlayPosition.DYNAMIC && overlay.getPosition() != OverlayPosition.TOOLTIP)
+			{
+				overlay.setPreferredPosition(position);
+			}
+			else
+			{
+				log.info("Resetting preferred position of dynamic overlay {}", overlay.getClass().getSimpleName());
+				saveOverlayPosition(overlay);
+			}
+		}
 	}
 
 	private void updateOverlayConfig(final Overlay overlay)
