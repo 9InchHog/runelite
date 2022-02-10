@@ -134,7 +134,10 @@ public class SpoonGroundItemsPlugin extends Plugin
 	private List<String> highlightedItemsList = new CopyOnWriteArrayList<>();
 
 	@Inject
-	private SpoonGroundItemInputListener inputListener;
+	private SpoonGroundItemHotkeyListener hotkeyListener;
+
+	@Inject
+	private SpoonGroundItemMouseAdapter mouseAdapter;
 
 	@Inject
 	private MouseManager mouseManager;
@@ -190,8 +193,8 @@ public class SpoonGroundItemsPlugin extends Plugin
 	protected void startUp()
 	{
 		overlayManager.add(overlay);
-		mouseManager.registerMouseListener(inputListener);
-		keyManager.registerKeyListener(inputListener);
+		mouseManager.registerMouseListener(mouseAdapter);
+		keyManager.registerKeyListener(hotkeyListener);
 		executor.execute(this::reset);
 		lastUsedItem = -1;
 	}
@@ -200,8 +203,8 @@ public class SpoonGroundItemsPlugin extends Plugin
 	protected void shutDown()
 	{
 		overlayManager.remove(overlay);
-		mouseManager.unregisterMouseListener(inputListener);
-		keyManager.unregisterKeyListener(inputListener);
+		mouseManager.unregisterMouseListener(mouseAdapter);
+		keyManager.unregisterKeyListener(hotkeyListener);
 		highlightedItems.invalidateAll();
 		highlightedItems = null;
 		hiddenItems.invalidateAll();
