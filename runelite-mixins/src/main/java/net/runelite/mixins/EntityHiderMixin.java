@@ -31,6 +31,7 @@ import net.runelite.api.mixins.*;
 import net.runelite.rs.api.*;
 
 import java.util.List;
+import java.util.Set;
 
 @Mixin(RSScene.class)
 public abstract class EntityHiderMixin implements RSScene
@@ -100,6 +101,9 @@ public abstract class EntityHiderMixin implements RSScene
 
 	@Shadow("hiddenNpcIndices")
 	private static List<Integer> hiddenNpcIndices;
+
+	@Shadow("hiddenGraphicsObjects")
+	private static Set<Integer> hiddenGraphicsObjects;
 
 	@Copy("newGameObject")
 	@Replace("newGameObject")
@@ -234,6 +238,11 @@ public abstract class EntityHiderMixin implements RSScene
 		else if (entity instanceof RSProjectile)
 		{
 			return !hideProjectiles;
+		}
+		else if (entity instanceof RSGraphicsObject)
+		{
+			RSGraphicsObject graphicsObject = (RSGraphicsObject) entity;
+			return !hiddenGraphicsObjects.contains(graphicsObject.getId());
 		}
 
 		return true;
