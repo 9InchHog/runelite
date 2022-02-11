@@ -138,7 +138,7 @@ public class OPRSExternalPluginManager
 	@Setter
 	boolean isOutdated;
 	@Getter
-	public final ArrayList<String> pluginsPackages = new ArrayList<>();
+	public static final ArrayList<String> pluginsPackages = new ArrayList<>();
 
 	public void setupInstance()
 	{
