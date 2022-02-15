@@ -410,6 +410,10 @@ public class SocketPlugin extends Plugin {
                                     flagMesOut("You scythed on " + b + ".");
                                 }
                             }
+
+                            if (wep == 22486 || wep == 25738 || wep == 25741) {
+                                flagMesOut("You attacked with an uncharged scythe.");
+                            }
                         } else if (anim == bow && !otherShitBow(wep) && !client.isPrayerActive(Prayer.RIGOUR)) {
                             flagMesOut("You bowed without rigour active.");
                         } else if (anim == hammerBop && wep == 13576) {
