@@ -391,7 +391,7 @@ public class SocketPlugin extends Plugin {
                 }
 
                 if (p.equals(client.getLocalPlayer()) && anim != 0 && anim != -1) {
-                    if (!ignoredNPCs(target)) {
+                    if (ignoredNPCs(target)) {
                         int style = client.getVar(VarPlayer.ATTACK_STYLE);
                         if (anim == scy) {
                             String b = "";
