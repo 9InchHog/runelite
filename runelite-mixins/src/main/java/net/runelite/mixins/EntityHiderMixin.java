@@ -144,6 +144,14 @@ public abstract class EntityHiderMixin implements RSScene
 			return true;
 		}
 
+		if (entity instanceof RSRenderable)
+		{
+			if (((RSRenderable) entity).isHidden())
+			{
+				return false;
+			}
+		}
+
 		if (entity instanceof RSPlayer)
 		{
 			RSPlayer player = (RSPlayer) entity;
