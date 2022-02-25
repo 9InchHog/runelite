@@ -45,6 +45,8 @@ public class HighlightedNpc
 	boolean tile;
 	boolean swTile;
 	boolean outline;
+	boolean trueTile;
+	boolean area;
 	boolean name;
 	boolean nameOnMinimap;
 	@Builder.Default

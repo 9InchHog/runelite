@@ -121,6 +121,29 @@ class NpcOverlay extends Overlay
 			modelOutlineRenderer.drawOutline(actor, (int) highlightedNpc.getBorderWidth(), borderColor, highlightedNpc.getOutlineFeather());
 		}
 
+		if (highlightedNpc.isTrueTile())
+		{
+			int size = npcComposition.getSize();
+			LocalPoint lp = LocalPoint.fromWorld(client, actor.getWorldLocation());
+
+			if (lp != null)
+			{
+				lp = new LocalPoint(lp.getX() + size * Perspective.LOCAL_TILE_SIZE / 2 - 64, lp.getY() + size * Perspective.LOCAL_TILE_SIZE / 2 - 64);
+				Polygon trueTilePoly = Perspective.getCanvasTileAreaPoly(client, lp, size);
+				if (trueTilePoly != null)
+				{
+					renderPoly(graphics, borderColor, borderWidth, fillColor, trueTilePoly);
+				}
+			}
+		}
+
+		if (highlightedNpc.isArea())
+		{
+			Shape objectClickbox = actor.getConvexHull();
+			graphics.setColor(fillColor);
+			graphics.fill(objectClickbox);
+		}
+
 		if (highlightedNpc.isName() && actor.getName() != null)
 		{
 			String npcName = Text.removeTags(actor.getName());
