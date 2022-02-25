@@ -51,12 +51,57 @@ public interface SpoonSlayerConfig extends Config
 
     @ConfigItem(
             position = 0,
-            keyName = "highlightTargets",
-            name = "Highlight Targets",
-            description = "Highlight monsters you can kill for your current slayer assignment",
+            keyName = "highlightArea",
+            name = "Highlight area",
+            description = "Configures whether the NPC area should be highlighted",
             section = overlay
     )
-    default TileMode highlightTargets() {return TileMode.OFF;}
+    default boolean highlightArea() {return false;}
+
+    @ConfigItem(
+            position = 0,
+            keyName = "highlightHull",
+            name = "Highlight hull",
+            description = "Configures whether the NPC hull should be highlighted",
+            section = overlay
+    )
+    default boolean highlightHull() {return false;}
+
+    @ConfigItem(
+            position = 0,
+            keyName = "highlightOutline",
+            name = "Highlight outline",
+            description = "Configures whether or not the NPC outline should be highlighted",
+            section = overlay
+    )
+    default boolean highlightOutline() {return false;}
+
+    @ConfigItem(
+            position = 0,
+            keyName = "highlightSouthWestTile",
+            name = "Highlight south west tile",
+            description = "Configures whether the NPC south west tile should be highlighted",
+            section = overlay
+    )
+    default boolean highlightSouthWestTile() {return false;}
+
+    @ConfigItem(
+            position = 0,
+            keyName = "highlightTile",
+            name = "Highlight tile",
+            description = "Configures whether the NPC tile should be highlighted",
+            section = overlay
+    )
+    default boolean highlightTile() {return false;}
+
+    @ConfigItem(
+            position = 0,
+            keyName = "highlightTrueTile",
+            name = "Highlight true tile",
+            description = "Configures whether the NPC true tile should be highlighted",
+            section = overlay
+    )
+    default boolean highlightTrueTile() {return false;}
 
     @Alpha
     @ConfigItem(
@@ -68,14 +113,15 @@ public interface SpoonSlayerConfig extends Config
     )
     default Color getTargetColor() {return Color.RED;}
 
+    @Alpha
     @ConfigItem(
-            position = 2,
-            keyName = "opacity",
-            name = "Opacity",
-            description = "Configures the opacity of the highlighted style",
+            position = 1,
+            keyName = "targetFillColor",
+            name = "Target Fill Color",
+            description = "Color of the fill of the highlighted targets",
             section = overlay
     )
-    default int opacity() {return 20;}
+    default Color getTargetFillColor() {return new Color(255, 0, 0, 20);}
 
     @ConfigItem(
             position = 3,
@@ -84,8 +130,7 @@ public interface SpoonSlayerConfig extends Config
             description = "Configures the width of the tiles",
             section = overlay
     )
-    @Range(min = 0, max = 5)
-    default int targetThiCC() {return 2;}
+    default double targetThiCC() {return 2;}
 
     @ConfigItem(
             position = 4,
@@ -174,7 +219,7 @@ public interface SpoonSlayerConfig extends Config
         return true;
     }
 
-    public enum TileMode {
+    enum TileMode {
         OFF, AREA, HULL, TILE, TRUE_LOCATIONS, SOUTH_WEST_TILE, OUTLINE;
     }
 }

@@ -46,6 +46,7 @@ import net.runelite.client.eventbus.Subscribe;
 import net.runelite.client.events.ChatInput;
 import net.runelite.client.events.ConfigChanged;
 import net.runelite.client.game.ItemManager;
+import net.runelite.client.game.npcoverlay.HighlightedNpc;
 import net.runelite.client.game.npcoverlay.NpcOverlayService;
 import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDescriptor;
@@ -66,6 +67,7 @@ import java.time.Instant;
 import java.util.List;
 import java.util.*;
 import java.util.concurrent.ScheduledExecutorService;
+import java.util.function.Function;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -141,9 +143,6 @@ public class SpoonSlayerPlugin extends Plugin
     private TargetWeaknessOverlay targetWeaknessOverlay;
 
     @Inject
-    private TargetOverlay targetOverlay;
-
-    @Inject
     private TargetMinimapOverlay minimapOverlay;
 
     @Inject
@@ -194,33 +193,38 @@ public class SpoonSlayerPlugin extends Plugin
     private boolean loginFlag;
     private final List<String> targetNames = new ArrayList<>();
 
-    /*public final Function<NPC, HighlightedNpc> isTarget = (n) ->
+    public final Function<NPC, HighlightedNpc> isTarget = (n) ->
     {
-        if ((config.highlightHull() || config.highlightTile() || config.highlightOutline()) && targets.contains(n))
+        if (((config.highlightHull() || config.highlightTile() || config.highlightOutline()) || config.highlightTrueTile() || config.highlightArea()
+                || config.highlightSouthWestTile()) && targets.contains(n))
         {
             Color color = config.getTargetColor();
             return HighlightedNpc.builder()
-                    .npc(n)
-                    .highlightColor(color)
-                    .fillColor(ColorUtil.colorWithAlpha(color, color.getAlpha() / 12))
-                    .hull(config.highlightHull())
-                    .tile(config.highlightTile())
-                    .outline(config.highlightOutline())
-                    .build();
-
+                .npc(n)
+                .highlightColor(color)
+                .fillColor(config.getTargetFillColor())
+                .hull(config.highlightHull())
+                .tile(config.highlightTile())
+                .outline(config.highlightOutline())
+                .trueTile(config.highlightTrueTile())
+                .area(config.highlightArea())
+                .swTile(config.highlightSouthWestTile())
+                .borderWidth((float) config.targetThiCC())
+                .outlineFeather(config.outlineFeather())
+                .jagged(!config.antiAlias())
+                .build();
         }
         return null;
-    };*/
+    };
 
     @Override
     protected void startUp() throws Exception
     {
         chatCommandManager.registerCommandAsync(TASK_COMMAND_STRING, this::taskLookup, this::taskSubmit);
-        //npcOverlayService.registerHighlighter(isTarget);
+        npcOverlayService.registerHighlighter(isTarget);
 
         overlayManager.add(overlay);
         overlayManager.add(targetWeaknessOverlay);
-        overlayManager.add(targetOverlay);
         overlayManager.add(minimapOverlay);
 
         if (client.getGameState() == GameState.LOGGED_IN)
@@ -233,9 +237,9 @@ public class SpoonSlayerPlugin extends Plugin
                     && !getStringProfileConfig(SpoonSlayerConfig.TASK_NAME_KEY).isEmpty())
             {
                 clientThread.invoke(() -> setTask(getStringProfileConfig(SpoonSlayerConfig.TASK_NAME_KEY),
-                        getIntProfileConfig(SpoonSlayerConfig.AMOUNT_KEY),
-                        getIntProfileConfig(SpoonSlayerConfig.INIT_AMOUNT_KEY),
-                        getStringProfileConfig(SpoonSlayerConfig.TASK_LOC_KEY), false));
+                    getIntProfileConfig(SpoonSlayerConfig.AMOUNT_KEY),
+                    getIntProfileConfig(SpoonSlayerConfig.INIT_AMOUNT_KEY),
+                    getStringProfileConfig(SpoonSlayerConfig.TASK_LOC_KEY), false));
             }
         }
     }
@@ -244,11 +248,10 @@ public class SpoonSlayerPlugin extends Plugin
     protected void shutDown() throws Exception
     {
         chatCommandManager.unregisterCommand(TASK_COMMAND_STRING);
-        //npcOverlayService.unregisterHighlighter(isTarget);
+        npcOverlayService.unregisterHighlighter(isTarget);
 
         overlayManager.remove(overlay);
         overlayManager.remove(targetWeaknessOverlay);
-        overlayManager.remove(targetOverlay);
         overlayManager.remove(minimapOverlay);
         removeCounter();
         targets.clear();
@@ -283,9 +286,9 @@ public class SpoonSlayerPlugin extends Plugin
                         && loginFlag)
                 {
                     setTask(getStringProfileConfig(SpoonSlayerConfig.TASK_NAME_KEY),
-                            getIntProfileConfig(SpoonSlayerConfig.AMOUNT_KEY),
-                            getIntProfileConfig(SpoonSlayerConfig.INIT_AMOUNT_KEY),
-                            getStringProfileConfig(SpoonSlayerConfig.TASK_LOC_KEY), false);
+                        getIntProfileConfig(SpoonSlayerConfig.AMOUNT_KEY),
+                        getIntProfileConfig(SpoonSlayerConfig.INIT_AMOUNT_KEY),
+                        getStringProfileConfig(SpoonSlayerConfig.TASK_LOC_KEY), false);
                     loginFlag = false;
                 }
                 break;
@@ -656,16 +659,16 @@ public class SpoonSlayerPlugin extends Plugin
         }
 
         final String name = composition.getName()
-                .replace('\u00A0', ' ')
-                .toLowerCase();
+            .replace('\u00A0', ' ')
+            .toLowerCase();
 
         for (String target : targetNames)
         {
             if (name.contains(target))
             {
                 if (ArrayUtils.contains(composition.getActions(), "Attack")
-                        // Pick action is for zygomite-fungi
-                        || ArrayUtils.contains(composition.getActions(), "Pick"))
+                    // Pick action is for zygomite-fungi
+                    || ArrayUtils.contains(composition.getActions(), "Pick"))
                 {
                     return true;
                 }
@@ -681,8 +684,8 @@ public class SpoonSlayerPlugin extends Plugin
         if (task != null)
         {
             Arrays.stream(task.getTargetNames())
-                    .map(String::toLowerCase)
-                    .forEach(targetNames::add);
+                .map(String::toLowerCase)
+                .forEach(targetNames::add);
 
             targetNames.add(taskName.toLowerCase().replaceAll("s$", ""));
         }

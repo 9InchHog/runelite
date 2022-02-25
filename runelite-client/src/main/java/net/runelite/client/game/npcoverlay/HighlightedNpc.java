@@ -49,6 +49,7 @@ public class HighlightedNpc
 	boolean area;
 	boolean name;
 	boolean nameOnMinimap;
+	boolean jagged;
 	@Builder.Default
 	float borderWidth = 2.0f;
 	int outlineFeather;

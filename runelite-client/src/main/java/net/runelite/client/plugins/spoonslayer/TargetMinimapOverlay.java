@@ -25,11 +25,12 @@ public class TargetMinimapOverlay extends Overlay {
     }
 
     public Dimension render(Graphics2D graphics) {
-        if (this.config.highlightTargets() == SpoonSlayerConfig.TileMode.OFF)
-            return null;
-        List<NPC> targets = this.plugin.getTargets();
-        for (NPC target : targets)
-            renderTargetOverlay(graphics, target, this.config.getTargetColor());
+        if (config.highlightArea() || config.highlightHull() || config.highlightOutline() || config.highlightSouthWestTile()
+                || config.highlightTile() || config.highlightTrueTile()) {
+            List<NPC> targets = plugin.getTargets();
+            for (NPC target : targets)
+                renderTargetOverlay(graphics, target, config.getTargetColor());
+        }
         return null;
     }
 

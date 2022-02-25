@@ -25,12 +25,7 @@
  */
 package net.runelite.client.game.npcoverlay;
 
-import java.awt.BasicStroke;
-import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.Graphics2D;
-import java.awt.Polygon;
-import java.awt.Shape;
+import java.awt.*;
 import java.util.Map;
 import java.util.function.Predicate;
 import net.runelite.api.Client;
@@ -94,13 +89,21 @@ class NpcOverlay extends Overlay
 		if (highlightedNpc.isHull())
 		{
 			Shape objectClickbox = actor.getConvexHull();
-			renderPoly(graphics, borderColor, borderWidth, fillColor, objectClickbox);
+			if (highlightedNpc.isJagged()) {
+				renderPolyJagged(graphics, borderColor, borderWidth, fillColor, objectClickbox);
+			} else {
+				renderPoly(graphics, borderColor, borderWidth, fillColor, objectClickbox);
+			}
 		}
 
 		if (highlightedNpc.isTile())
 		{
 			Polygon tilePoly = actor.getCanvasTilePoly();
-			renderPoly(graphics, borderColor, borderWidth, fillColor, tilePoly);
+			if (highlightedNpc.isJagged()) {
+				renderPolyJagged(graphics, borderColor, borderWidth, fillColor, tilePoly);
+			} else {
+				renderPoly(graphics, borderColor, borderWidth, fillColor, tilePoly);
+			}
 		}
 
 		if (highlightedNpc.isSwTile())
@@ -113,7 +116,11 @@ class NpcOverlay extends Overlay
 
 			Polygon southWestTilePoly = Perspective.getCanvasTilePoly(client, new LocalPoint(x, y));
 
-			renderPoly(graphics, borderColor, borderWidth, fillColor, southWestTilePoly);
+			if (highlightedNpc.isJagged()) {
+				renderPolyJagged(graphics, borderColor, borderWidth, fillColor, southWestTilePoly);
+			} else {
+				renderPoly(graphics, borderColor, borderWidth, fillColor, southWestTilePoly);
+			}
 		}
 
 		if (highlightedNpc.isOutline())
@@ -132,7 +139,11 @@ class NpcOverlay extends Overlay
 				Polygon trueTilePoly = Perspective.getCanvasTileAreaPoly(client, lp, size);
 				if (trueTilePoly != null)
 				{
-					renderPoly(graphics, borderColor, borderWidth, fillColor, trueTilePoly);
+					if (highlightedNpc.isJagged()) {
+						renderPolyJagged(graphics, borderColor, borderWidth, fillColor, trueTilePoly);
+					} else {
+						renderPoly(graphics, borderColor, borderWidth, fillColor, trueTilePoly);
+					}
 				}
 			}
 		}
@@ -160,6 +171,19 @@ class NpcOverlay extends Overlay
 	{
 		if (polygon != null)
 		{
+			graphics.setColor(borderColor);
+			graphics.setStroke(new BasicStroke(borderWidth));
+			graphics.draw(polygon);
+			graphics.setColor(fillColor);
+			graphics.fill(polygon);
+		}
+	}
+
+	private void renderPolyJagged(Graphics2D graphics, Color borderColor, float borderWidth, Color fillColor, Shape polygon)
+	{
+		if (polygon != null)
+		{
+			graphics.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_OFF);
 			graphics.setColor(borderColor);
 			graphics.setStroke(new BasicStroke(borderWidth));
 			graphics.draw(polygon);
