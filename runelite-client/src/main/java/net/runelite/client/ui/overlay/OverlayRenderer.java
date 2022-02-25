@@ -741,7 +741,8 @@ public class OverlayRenderer extends MouseAdapter implements KeyListener
 	@Override
 	public void keyPressed(KeyEvent e)
 	{
-		if (e.isAltDown())
+		//if (e.isAltDown())
+		if (runeLiteConfig.overlayKey().matches(e))
 		{
 			inOverlayManagingMode = true;
 		}
@@ -750,7 +751,8 @@ public class OverlayRenderer extends MouseAdapter implements KeyListener
 	@Override
 	public void keyReleased(KeyEvent e)
 	{
-		if (!e.isAltDown() && inOverlayManagingMode)
+		//if (!e.isAltDown() && inOverlayManagingMode)
+		if (runeLiteConfig.overlayKey().matches(e) && inOverlayManagingMode)
 		{
 			inOverlayManagingMode = false;
 			resetOverlayManagementMode();

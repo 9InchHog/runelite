@@ -526,6 +526,14 @@ public interface RuneLiteConfig extends Config
 	)
 	default boolean rlCheckbox() { return true; }
 
+	@ConfigItem(
+			keyName = "overlayKey",
+			name = "Manage Overlay Key",
+			description = "Sets the key to use to manage overlays. Accepts modifiers.",
+			position = 54
+	)
+	default Keybind overlayKey() { return new Keybind(KeyEvent.VK_ALT, InputEvent.ALT_DOWN_MASK); }
+
 	enum FontWeight {
 		PLAIN(0), BOLD(1), ITALIC(2);
 
