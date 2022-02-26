@@ -288,7 +288,7 @@ public interface sTileIndicatorsConfig extends Config
 	)
 	default boolean rave()
 	{
-		return true;
+		return false;
 	}
 
 	@Getter
