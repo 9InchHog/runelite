@@ -27,6 +27,7 @@ package net.runelite.client.plugins.spoonobjectindicators;
 import net.runelite.api.*;
 import net.runelite.client.ui.overlay.*;
 import net.runelite.client.ui.overlay.outline.ModelOutlineRenderer;
+import net.runelite.client.util.RaveUtils;
 
 import javax.inject.Inject;
 import java.awt.*;
@@ -39,14 +40,16 @@ class sObjectIndicatorsOverlay extends Overlay
 	private final sObjectIndicatorsConfig config;
 	private final sObjectIndicatorsPlugin plugin;
 	private final ModelOutlineRenderer modelOutlineRenderer;
+	private final RaveUtils raveUtils;
 
 	@Inject
-	private sObjectIndicatorsOverlay(Client client, sObjectIndicatorsConfig config, sObjectIndicatorsPlugin plugin, ModelOutlineRenderer modelOutlineRenderer)
+	private sObjectIndicatorsOverlay(Client client, sObjectIndicatorsConfig config, sObjectIndicatorsPlugin plugin, ModelOutlineRenderer modelOutlineRenderer, RaveUtils raveUtils)
 	{
 		this.client = client;
 		this.config = config;
 		this.plugin = plugin;
 		this.modelOutlineRenderer = modelOutlineRenderer;
+		this.raveUtils = raveUtils;
 		setPosition(OverlayPosition.DYNAMIC);
 		setPriority(OverlayPriority.LOW);
 		setLayer(OverlayLayer.ABOVE_SCENE);
@@ -68,7 +71,11 @@ class sObjectIndicatorsOverlay extends Overlay
 			if (color == null || !config.rememberObjectColors())
 			{
 				// Fallback to the current config if the object is marked before the addition of multiple colors
-				color = config.markerColor();
+				if (config.rave()) {
+					color = raveUtils.getColor(colorTileObject.hashCode(), client.getGameCycle(), false);
+				} else {
+					color = config.markerColor();
+				}
 			}
 
 			switch (config.objectMarkerRenderStyle())

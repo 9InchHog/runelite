@@ -365,6 +365,15 @@ public interface SpoonGroundItemsConfig extends Config
 		return Lootbeam.Style.MODERN;
 	}
 
+	/*@ConfigItem(
+			keyName = "raveLootBeams",
+			name = "Rave Loot Beams",
+			description = "catJam",
+			position = 11,
+			section = highlight
+	)
+	default RaveLootBeamMode raveLootBeams() { return RaveLootBeamMode.OFF; }*/
+
 	@ConfigItem(
 			keyName = "raveLootBeams",
 			name = "Rave Loot Beams",
@@ -372,7 +381,7 @@ public interface SpoonGroundItemsConfig extends Config
 			position = 11,
 			section = highlight
 	)
-	default RaveLootBeamMode raveLootBeams() { return RaveLootBeamMode.OFF; }
+	default boolean raveLootBeams() { return false; }
 
 	//------------------------------------------------------------//
 	// Value

@@ -151,6 +151,15 @@ public interface SpoonSlayerConfig extends Config
     )
     default boolean antiAlias() {return false;}
 
+    @ConfigItem(
+            position = 6,
+            keyName = "rave",
+            name = "Rave Targets",
+            description = "Turns on rave for the tiles.",
+            section = overlay
+    )
+    default boolean rave() {return false;}
+
     //Other Section
     @ConfigItem(
             position = 1,

@@ -534,6 +534,16 @@ public interface RuneLiteConfig extends Config
 	)
 	default Keybind overlayKey() { return new Keybind(KeyEvent.VK_ALT, InputEvent.ALT_DOWN_MASK); }
 
+	@ConfigItem(
+			keyName = "raveSpeed",
+			name = "Rave Highlight Speed",
+			description = "Sets the speed of all rave highlights",
+			position = 55
+	)
+	@Units(Units.MILLISECONDS)
+	default int raveSpeed() {return 6000;}
+
+
 	enum FontWeight {
 		PLAIN(0), BOLD(1), ITALIC(2);
 

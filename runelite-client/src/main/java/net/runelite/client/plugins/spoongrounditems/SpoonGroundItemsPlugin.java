@@ -58,6 +58,7 @@ import net.runelite.client.plugins.spoongrounditems.config.MenuHighlightMode;
 import net.runelite.client.ui.overlay.OverlayManager;
 import net.runelite.client.util.ColorUtil;
 import net.runelite.client.util.QuantityFormatter;
+import net.runelite.client.util.RaveUtils;
 import net.runelite.client.util.Text;
 import org.pf4j.Extension;
 
@@ -169,6 +170,9 @@ public class SpoonGroundItemsPlugin extends Plugin
 	@Inject
 	private ScheduledExecutorService executor;
 
+	@Inject
+	private RaveUtils raveUtils;
+
 	@Getter
 	private final Table<WorldPoint, Integer, SpoonGroundItem> collectedGroundItems = HashBasedTable.create();
 	private List<PriceHighlight> priceChecks = ImmutableList.of();
@@ -221,7 +225,8 @@ public class SpoonGroundItemsPlugin extends Plugin
 		if (event.getGroup().equals("grounditems"))
 		{
 			executor.execute(this::reset);
-			if(event.getKey().equals("raveLootBeams") && config.raveLootBeams() == SpoonGroundItemsConfig.RaveLootBeamMode.OFF) {
+			//if (event.getKey().equals("raveLootBeams") && config.raveLootBeams() == SpoonGroundItemsConfig.RaveLootBeamMode.OFF) {
+			if (event.getKey().equals("raveLootBeams") && !config.raveLootBeams()) {
 				clientThread.invokeLater(this::handleLootbeams);
 			}
 		}
@@ -326,54 +331,12 @@ public class SpoonGroundItemsPlugin extends Plugin
 	@Subscribe
 	public void onClientTick(ClientTick event)
 	{
-		raveDelay++;
-		if(config.raveLootBeams() == SpoonGroundItemsConfig.RaveLootBeamMode.FLOW) {
-			int red = raveLootbeamColor.getRed();
-			if (raveRedUp) {
-				red++;
-				if (red == 255) {
-					raveRedUp = false;
-				}
-			} else {
-				red--;
-				if(red == 0) {
-					raveRedUp = true;
-				}
+		for (GraphicsObject graphicsObject : client.getGraphicsObjects())
+		{
+			if (config.raveLootBeams() && graphicsObject instanceof RuneLiteObject)
+			{
+				raveUtils.recolorAllFaces(graphicsObject.getModel(), raveUtils.getColor(graphicsObject.getLocation().hashCode(), false));
 			}
-			int green = raveLootbeamColor.getGreen();
-			if (raveGreenUp) {
-				green++;
-				if(green == 255) {
-					raveGreenUp = false;
-				}
-			} else {
-				green--;
-				if(green == 0) {
-					raveGreenUp = true;
-				}
-			}
-			int blue = raveLootbeamColor.getBlue();
-			if (raveBlueUp) {
-				blue++;
-				if(blue == 255) {
-					raveBlueUp = false;
-				}
-			} else {
-				blue--;
-				if(blue == 0) {
-					raveBlueUp = true;
-				}
-			}
-			
-			raveLootbeamColor = new Color(red, green, blue, 255);
-			lootbeams.forEach((wp, l) -> {
-				l.setColor(raveLootbeamColor);
-			});
-			raveDelay = 0;
-		} else if (config.raveLootBeams() == SpoonGroundItemsConfig.RaveLootBeamMode.EPILEPSY) {
-			lootbeams.forEach((wp, l) -> {
-				l.setColor(new Color(new Random().nextInt(255), new Random().nextInt(255), new Random().nextInt(255), 255));
-			});
 		}
 
 		if (!config.collapseEntries())
@@ -973,15 +936,6 @@ public class SpoonGroundItemsPlugin extends Plugin
 		if (lootbeam != null)
 		{
 			lootbeam.remove();
-		}
-	}
-
-	@Subscribe
-	public void onGameTick(GameTick event) {
-		if(config.raveLootBeams() == SpoonGroundItemsConfig.RaveLootBeamMode.RAVE) {
-			lootbeams.forEach((wp, l) -> {
-				l.setColor(new Color(new Random().nextInt(255), new Random().nextInt(255), new Random().nextInt(255), 255));
-			});
 		}
 	}
 }

@@ -42,6 +42,7 @@ import net.runelite.client.Notifier;
 import net.runelite.client.callback.ClientThread;
 import net.runelite.client.chat.*;
 import net.runelite.client.config.ConfigManager;
+import net.runelite.client.config.RuneLiteConfig;
 import net.runelite.client.eventbus.Subscribe;
 import net.runelite.client.events.ChatInput;
 import net.runelite.client.events.ConfigChanged;
@@ -160,6 +161,9 @@ public class SpoonSlayerPlugin extends Plugin
     @Inject
     private NpcOverlayService npcOverlayService;
 
+    @Inject
+    private RuneLiteConfig runeLiteConfig;
+
     @Getter(AccessLevel.PACKAGE)
     private final List<NPC> targets = new ArrayList<>();
 
@@ -212,6 +216,8 @@ public class SpoonSlayerPlugin extends Plugin
                 .borderWidth((float) config.targetThiCC())
                 .outlineFeather(config.outlineFeather())
                 .jagged(!config.antiAlias())
+                .rave(config.rave())
+                .raveSpeed(runeLiteConfig.raveSpeed())
                 .build();
         }
         return null;

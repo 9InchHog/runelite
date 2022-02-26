@@ -6,6 +6,7 @@ import net.runelite.api.Point;
 import net.runelite.api.coords.LocalPoint;
 import net.runelite.api.coords.WorldPoint;
 import net.runelite.client.ui.overlay.*;
+import net.runelite.client.util.RaveUtils;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -17,12 +18,14 @@ public class sGroundMarkerOverlay extends Overlay {
 	private final Client client;
 	private final sGroundMarkerPlugin plugin;
 	private final sGroundMarkerConfig config;
+	private final RaveUtils raveUtils;
 
 	@Inject
-	private sGroundMarkerOverlay(final Client client, final sGroundMarkerPlugin plugin, final sGroundMarkerConfig config) {
+	private sGroundMarkerOverlay(final Client client, final sGroundMarkerPlugin plugin, final sGroundMarkerConfig config, final RaveUtils raveUtils) {
 		this.client = client;
 		this.plugin = plugin;
 		this.config = config;
+		this.raveUtils = raveUtils;
 		setPosition(OverlayPosition.DYNAMIC);
 		setPriority(OverlayPriority.LOW);
 		setLayer(OverlayLayer.ABOVE_SCENE);
@@ -78,6 +81,9 @@ public class sGroundMarkerOverlay extends Overlay {
 							break;
 						case 12:
 							color = config.markerColor12();
+					}
+					if (config.rave()) {
+						color = raveUtils.getColor(groundMarkerWorldPoint.hashCode(), client.getGameCycle(), true);
 					}
 					renderPolygon(graphics, poly, color);
 

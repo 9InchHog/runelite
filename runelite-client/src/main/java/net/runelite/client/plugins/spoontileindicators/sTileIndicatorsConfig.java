@@ -280,6 +280,17 @@ public interface sTileIndicatorsConfig extends Config
 		return true;
 	}
 
+	@ConfigItem(
+			keyName = "rave",
+			name = "Rave Tile Indicators",
+			description = "Turns on rave for the tiles.",
+			position = 17
+	)
+	default boolean rave()
+	{
+		return true;
+	}
+
 	@Getter
 	@AllArgsConstructor
 	public enum TileStyle {

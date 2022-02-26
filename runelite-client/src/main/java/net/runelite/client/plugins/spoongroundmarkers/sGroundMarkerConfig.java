@@ -308,4 +308,12 @@ public interface sGroundMarkerConfig extends Config {
 			position = 22
 	)
 	default boolean showClear() { return false; }
+
+	@ConfigItem(
+			keyName = "rave",
+			name = "Rave Ground Markers",
+			description = "Changes the ground marker colors to rave",
+			position = 23
+	)
+	default boolean rave() { return false; }
 }

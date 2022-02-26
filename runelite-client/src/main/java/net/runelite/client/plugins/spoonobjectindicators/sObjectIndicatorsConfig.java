@@ -101,4 +101,15 @@ public interface sObjectIndicatorsConfig extends Config
 	{
 		return 0;
 	}
+
+	@ConfigItem(
+			position = 6,
+			keyName = "rave",
+			name = "Rave Objects",
+			description = "Changes the color of all object markers to rave"
+	)
+	default boolean rave()
+	{
+		return false;
+	}
 }

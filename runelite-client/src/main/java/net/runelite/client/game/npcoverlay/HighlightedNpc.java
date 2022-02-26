@@ -50,6 +50,8 @@ public class HighlightedNpc
 	boolean name;
 	boolean nameOnMinimap;
 	boolean jagged;
+	boolean rave;
+	int raveSpeed;
 	@Builder.Default
 	float borderWidth = 2.0f;
 	int outlineFeather;

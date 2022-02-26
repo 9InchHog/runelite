@@ -34,15 +34,20 @@ import net.runelite.api.NPCComposition;
 import net.runelite.api.Perspective;
 import net.runelite.api.Point;
 import net.runelite.api.coords.LocalPoint;
+import net.runelite.client.config.RuneLiteConfig;
 import net.runelite.client.ui.overlay.Overlay;
 import net.runelite.client.ui.overlay.OverlayLayer;
 import net.runelite.client.ui.overlay.OverlayPosition;
 import net.runelite.client.ui.overlay.OverlayUtil;
 import net.runelite.client.ui.overlay.outline.ModelOutlineRenderer;
+import net.runelite.client.util.RaveUtils;
 import net.runelite.client.util.Text;
+
+import javax.inject.Inject;
 
 class NpcOverlay extends Overlay
 {
+	private RuneLiteConfig config;
 	private final Client client;
 	private final ModelOutlineRenderer modelOutlineRenderer;
 	private final Map<NPC, HighlightedNpc> highlightedNpcs;
@@ -82,9 +87,16 @@ class NpcOverlay extends Overlay
 			return;
 		}
 
-		final Color borderColor = highlightedNpc.getHighlightColor();
 		float borderWidth = highlightedNpc.getBorderWidth();
-		final Color fillColor = highlightedNpc.getFillColor();
+		Color borderColor = highlightedNpc.getHighlightColor();
+		Color fillColor = highlightedNpc.getFillColor();
+
+		if (highlightedNpc.isRave())
+		{
+			borderColor = RaveUtils.getColor(highlightedNpc.hashCode(), client.getGameCycle(), true, highlightedNpc.getRaveSpeed());
+			Color raveColor = RaveUtils.getColor(highlightedNpc.hashCode(), client.getGameCycle(), true, highlightedNpc.getRaveSpeed());
+			fillColor = new Color(raveColor.getRed(), raveColor.getGreen(), raveColor.getBlue(), highlightedNpc.getFillColor().getAlpha());
+		}
 
 		if (highlightedNpc.isHull())
 		{

@@ -11,6 +11,7 @@ import net.runelite.client.ui.overlay.OverlayLayer;
 import net.runelite.client.ui.overlay.OverlayPosition;
 import net.runelite.client.ui.overlay.OverlayPriority;
 import net.runelite.client.util.ImageUtil;
+import net.runelite.client.util.RaveUtils;
 
 import javax.annotation.Nonnull;
 import javax.inject.Inject;
@@ -22,14 +23,17 @@ public class sTileIndicatorsOverlay extends Overlay {
 
 	private final sTileIndicatorsConfig config;
 
+	private final RaveUtils raveUtils;
+
 	private final BufferedImage ARROW_ICON;
 	private LocalPoint lastDestination;
 	private int gameCycle;
 
 	@Inject
-	private sTileIndicatorsOverlay(Client client, sTileIndicatorsConfig config) {
+	private sTileIndicatorsOverlay(Client client, sTileIndicatorsConfig config, RaveUtils raveUtils) {
 		this.client = client;
 		this.config = config;
+		this.raveUtils = raveUtils;
 		setPosition(OverlayPosition.DYNAMIC);
 		setLayer(OverlayLayer.ABOVE_SCENE);
 		setPriority(OverlayPriority.HIGHEST);
@@ -68,11 +72,7 @@ public class sTileIndicatorsOverlay extends Overlay {
 			if (config.highlightDestinationStyle() == sTileIndicatorsConfig.TileStyle.DEFAULT) {
 				renderTile(graphics, this.client.getLocalDestinationLocation(), this.config.highlightDestinationColor(), config.destinationTileBorderWidth(),
 						config.destinationTileOpacity(), config.highlightDestinationColor().getAlpha(), fillColor);
-			} else if (config.highlightDestinationStyle() == sTileIndicatorsConfig.TileStyle.RS3) {
-				renderRS3Tile(graphics, client.getLocalDestinationLocation(), config.highlightDestinationColor(), true);
-			} else {
-				renderRS3Tile(graphics, client.getLocalDestinationLocation(), config.highlightDestinationColor(), false);
-			}
+			} else renderRS3Tile(graphics, client.getLocalDestinationLocation(), config.highlightDestinationColor(), config.highlightDestinationStyle() == sTileIndicatorsConfig.TileStyle.RS3);
 		}
 		if (this.config.highlightCurrentTile()) {
 			WorldPoint playerPos = this.client.getLocalPlayer().getWorldLocation();
@@ -117,8 +117,14 @@ public class sTileIndicatorsOverlay extends Overlay {
 			return;
 		if (this.config.antiAlias()) {
 			graphics.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-		} else
-		graphics.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_OFF);
+		} else {
+			graphics.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_OFF);
+		}
+		if (config.rave()) {
+			color = raveUtils.getColor(dest.hashCode(), true);
+			Color raveFillColor = raveUtils.getColor(dest.hashCode(), true);
+			fillColor = new Color(raveFillColor.getRed(), raveFillColor.getGreen(), raveFillColor.getBlue(), fillColor.getAlpha());
+		}
 		if (borderWidth == 0) {
 			outlineAlpha = 0;
 		}
@@ -129,7 +135,7 @@ public class sTileIndicatorsOverlay extends Overlay {
 		graphics.fill(poly);
 	}
 
-	private void renderRS3Tile(final Graphics2D graphics, final LocalPoint dest, final Color color, boolean drawArrow)
+	private void renderRS3Tile(final Graphics2D graphics, final LocalPoint dest, Color color, boolean drawArrow)
 	{
 		if (dest == null)
 		{
@@ -140,6 +146,10 @@ public class sTileIndicatorsOverlay extends Overlay {
 		final Polygon poly = getCanvasTargetTileAreaPoly(client, dest, size, client.getPlane(), 10);
 		final Polygon shadow = getCanvasTargetTileAreaPoly(client, dest, size, client.getPlane(), 0);
 		Point canvasLoc = Perspective.getCanvasImageLocation(client, dest, ARROW_ICON, 150 + (int) (20 * Math.sin(client.getGameCycle() / 10.0)));
+
+		if (config.rave()) {
+			color = raveUtils.getColor(dest.hashCode(), true);
+		}
 
 		if (poly != null)
 		{
