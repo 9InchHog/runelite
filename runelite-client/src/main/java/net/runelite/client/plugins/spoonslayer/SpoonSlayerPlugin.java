@@ -218,6 +218,7 @@ public class SpoonSlayerPlugin extends Plugin
                 .jagged(!config.antiAlias())
                 .rave(config.rave())
                 .raveSpeed(runeLiteConfig.raveSpeed())
+                .render(npc -> !n.isDead())
                 .build();
         }
         return null;
