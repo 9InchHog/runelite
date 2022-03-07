@@ -239,7 +239,7 @@ public class SpoonNpcHighlightOverlay extends Overlay {
                             text = String.valueOf((n.respawnTime - (client.getTickCount() - n.diedOnTick)));
                         }
 
-                        Point textLoc = Perspective.getCanvasTextLocation(client, graphics, lp, text, 0);
+                        Point textLoc = Perspective.getCanvasTextLocation(client, graphics, centerLp, text, 0);
                         if (textLoc != null) {
                             Point pointShadow = new Point(textLoc.getX() + 1, textLoc.getY() + 1);
                             OverlayUtil.renderTextLocation(graphics, pointShadow, text, Color.BLACK);
