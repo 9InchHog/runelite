@@ -23,7 +23,8 @@ enum SpoonItemChargeType {
 	POTION(SpoonItemChargeConfig::showPotionDoseCount),
 	GUTHIX_REST(SpoonItemChargeConfig::showGuthixRestDoses),
 	DIVINE_POTION(SpoonItemChargeConfig::showDivinePotionDoseCount),
-	COX_POTION(SpoonItemChargeConfig::showCoxPotionDoseCount);
+	COX_POTION(SpoonItemChargeConfig::showCoxPotionDoseCount),
+	BLOOD_ESSENCE(SpoonItemChargeConfig::showBloodEssenceCharges);
 
 	SpoonItemChargeType(Predicate<SpoonItemChargeConfig> enabled) {
 		this.enabled = enabled;

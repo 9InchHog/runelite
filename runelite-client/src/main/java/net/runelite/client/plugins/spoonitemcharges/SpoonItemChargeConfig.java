@@ -44,6 +44,7 @@ public interface SpoonItemChargeConfig extends Config
     String KEY_EXPEDITIOUS_BRACELET = "expeditiousBracelet";
     String KEY_EXPLORERS_RING = "explorerRing";
     String KEY_RING_OF_FORGING = "ringOfForging";
+    String KEY_BLOOD_ESSENCE = "bloodEssence";
 
     @ConfigSection(
             name = "Charge Settings",
@@ -452,4 +453,16 @@ public interface SpoonItemChargeConfig extends Config
             unhide = "hideDosePotionCharges"
     )
     default int potionCharges() { return 4; }
+
+    @ConfigItem(
+            keyName = "showBloodEssenceCharges",
+            name = "Blood Essence Charges",
+            description = "Show Blood Essence charges",
+            position = 33,
+            section = chargesSection
+    )
+    default boolean showBloodEssenceCharges()
+    {
+        return true;
+    }
 }
