@@ -316,4 +316,12 @@ public interface sGroundMarkerConfig extends Config {
 			position = 23
 	)
 	default boolean rave() { return false; }
+
+	@ConfigItem(
+			keyName = "antiAlias",
+			name = "Anti-Aliasing",
+			description = "On makes the outlines smooth. Off makes them jagged",
+			position = 24
+	)
+	default boolean antiAlias() { return true; }
 }

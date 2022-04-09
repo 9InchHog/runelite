@@ -109,6 +109,12 @@ public class sGroundMarkerOverlay extends Overlay {
 		Color noOutline = new Color(cRed, cGreen, cBlue, 0);
 		Color noOutlineFill = new Color(cRed, cGreen, cBlue, config.opacity());
 
+		if (config.antiAlias()) {
+			graphics.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+		} else {
+			graphics.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_OFF);
+		}
+
 		if (config.tileThiCC() > 0) {
 			graphics.setColor(color);
 			final Stroke originalStroke = graphics.getStroke();
