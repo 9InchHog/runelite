@@ -40,6 +40,7 @@ import javax.swing.SwingUtilities;
 
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
+import net.runelite.api.ChatMessageType;
 import net.runelite.api.Client;
 import net.runelite.api.GameState;
 import net.runelite.api.KeyCode;
@@ -814,6 +815,17 @@ public class OverlayRenderer extends MouseAdapter implements KeyListener
 			log.warn(DEDUPLICATE, "Error during overlay rendering", ex);
 			return;
 		}
+		catch (Throwable throwable)
+		{
+			log.warn(DEDUPLICATE, "Error during overlay rendering: {}, {}, {}", overlay.getPlugin(), overlay.getName(), overlay.getClass());
+
+			client.addChatMessage(ChatMessageType.GAMEMESSAGE, "", "Fatal error: plugin " + overlay.getPlugin(), null);
+			client.addChatMessage(ChatMessageType.GAMEMESSAGE, "", "Fatal error: overlay " + overlay.getName(), null);
+			client.addChatMessage(ChatMessageType.GAMEMESSAGE, "", "Fatal error: " + overlay.getClass(), null);
+
+			overlayManager.remove(overlay);
+			return;
+		}
 
 		final Dimension dimension = MoreObjects.firstNonNull(overlayDimension, new Dimension());
 		overlay.getBounds().setSize(dimension);
@@ -903,7 +915,7 @@ public class OverlayRenderer extends MouseAdapter implements KeyListener
 	{
 		if (client.isResized())
 		{
-			if (client.getVar(Varbits.SIDE_PANELS) == 1)
+			if (client.getVarbitValue(Varbits.SIDE_PANELS) == 1)
 			{
 				return client.getWidget(WidgetInfo.RESIZABLE_VIEWPORT_BOTTOM_LINE);
 			}
