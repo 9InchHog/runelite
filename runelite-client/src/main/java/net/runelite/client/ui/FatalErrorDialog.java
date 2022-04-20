@@ -71,7 +71,7 @@ public class FatalErrorDialog extends JDialog
 
 		try
 		{
-			BufferedImage logo = ImageUtil.loadImageResource(FatalErrorDialog.class, "openosrs_transparent.png");
+			BufferedImage logo = ImageUtil.loadImageResource(FatalErrorDialog.class, "runelite_transparent.png");
 			setIconImage(logo);
 
 			JLabel runelite = new JLabel();
@@ -94,7 +94,7 @@ public class FatalErrorDialog extends JDialog
 			}
 		});
 
-		setTitle("Fatal error starting OpenOSRS");
+		setTitle("Fatal error starting RuneLite");
 		setLayout(new BorderLayout());
 
 		JPanel pane = (JPanel) getContentPane();
@@ -105,7 +105,7 @@ public class FatalErrorDialog extends JDialog
 		leftPane.setBackground(ColorScheme.DARKER_GRAY_COLOR);
 		leftPane.setLayout(new BorderLayout());
 
-		title = new JLabel("There was a fatal error starting OpenOSRS");
+		title = new JLabel("There was a fatal error starting RuneLite");
 		title.setForeground(Color.WHITE);
 		title.setFont(font.deriveFont(16.f));
 		title.setBorder(new EmptyBorder(10, 10, 10, 10));
@@ -201,7 +201,7 @@ public class FatalErrorDialog extends JDialog
 	{
 		if (err instanceof VerificationException || err instanceof GeneralSecurityException)
 		{
-			new FatalErrorDialog("OpenOSRS was unable to verify the security of its connection to the internet while " +
+			new FatalErrorDialog("RuneLite was unable to verify the security of its connection to the internet while " +
 				action + ". You may have a misbehaving antivirus, internet service provider, a proxy, or an incomplete" +
 				" java installation.")
 				.addHelpButtons()
@@ -211,7 +211,7 @@ public class FatalErrorDialog extends JDialog
 
 		if (err instanceof ConnectException)
 		{
-			new FatalErrorDialog("OpenOSRS is unable to connect to a required server while " + action + ". " +
+			new FatalErrorDialog("RuneLite is unable to connect to a required server while " + action + ". " +
 				"Please check your internet connection")
 				.addHelpButtons()
 				.open();
@@ -220,7 +220,7 @@ public class FatalErrorDialog extends JDialog
 
 		if (err instanceof UnknownHostException)
 		{
-			new FatalErrorDialog("OpenOSRS is unable to resolve the address of a required server while " + action + ". " +
+			new FatalErrorDialog("RuneLite is unable to resolve the address of a required server while " + action + ". " +
 				"Your DNS resolver may be misconfigured, pointing to an inaccurate resolver, or your internet connection may " +
 				"be down. ")
 				.addHelpButtons()
