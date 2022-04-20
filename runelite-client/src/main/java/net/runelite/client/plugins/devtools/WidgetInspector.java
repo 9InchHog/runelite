@@ -115,13 +115,13 @@ class WidgetInspector extends DevToolsFrame
 
 	@Inject
 	private WidgetInspector(
-			Client client,
-			ClientThread clientThread,
-			WidgetInfoTableModel infoTableModel,
-			DevToolsConfig config,
-			EventBus eventBus,
-			Provider<WidgetInspectorOverlay> overlay,
-			OverlayManager overlayManager)
+		Client client,
+		ClientThread clientThread,
+		WidgetInfoTableModel infoTableModel,
+		DevToolsConfig config,
+		EventBus eventBus,
+		Provider<WidgetInspectorOverlay> overlay,
+		OverlayManager overlayManager)
 	{
 		this.client = client;
 		this.clientThread = clientThread;
@@ -132,7 +132,7 @@ class WidgetInspector extends DevToolsFrame
 
 		eventBus.register(this);
 
-		setTitle("RuneLite Widget Inspector");
+		setTitle("OpenOSRS Widget Inspector");
 
 		setLayout(new BorderLayout());
 
@@ -435,12 +435,12 @@ class WidgetInspector extends DevToolsFrame
 			Widget[] roots = client.getWidgetRoots();
 
 			parent = Stream.of(roots)
-					.filter(w -> w.getType() == WidgetType.LAYER && w.getContentType() == 0 && !w.isSelfHidden())
-					.sorted(Comparator.comparingInt((Widget w) -> w.getRelativeX() + w.getRelativeY())
-							.reversed()
-							.thenComparingInt(Widget::getId)
-							.reversed())
-					.findFirst().get();
+				.filter(w -> w.getType() == WidgetType.LAYER && w.getContentType() == 0 && !w.isSelfHidden())
+				.sorted(Comparator.comparingInt((Widget w) -> w.getRelativeX() + w.getRelativeY())
+					.reversed()
+					.thenComparingInt(Widget::getId)
+					.reversed())
+				.findFirst().get();
 			x = 4;
 			y = 4;
 		}
@@ -516,8 +516,8 @@ class WidgetInspector extends DevToolsFrame
 		for (int i = 0; i < menuEntries.length; i++)
 		{
 			MenuEntry entry = menuEntries[i];
-			if (entry.getType() != MenuAction.ITEM_USE_ON_WIDGET
-					&& entry.getType() != MenuAction.SPELL_CAST_ON_WIDGET)
+			if (entry.getType() != MenuAction.WIDGET_USE_ON_ITEM
+				&& entry.getType() != MenuAction.WIDGET_TARGET_ON_WIDGET)
 			{
 				continue;
 			}
@@ -543,7 +543,7 @@ class WidgetInspector extends DevToolsFrame
 
 	Object getWidgetOrWidgetItemForMenuOption(MenuAction type, int param0, int param1)
 	{
-		if (type == MenuAction.SPELL_CAST_ON_WIDGET)
+		if (type == MenuAction.WIDGET_TARGET_ON_WIDGET)
 		{
 			Widget w = client.getWidget(param1);
 			if (param0 != -1)
@@ -553,7 +553,7 @@ class WidgetInspector extends DevToolsFrame
 
 			return w;
 		}
-		else if (type == MenuAction.ITEM_USE_ON_WIDGET)
+		else if (type == MenuAction.WIDGET_USE_ON_ITEM)
 		{
 			Widget w = client.getWidget(param1);
 			return w.getWidgetItem(param0);

@@ -27,7 +27,6 @@ package net.runelite.client.ui;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
-import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.event.WindowAdapter;
@@ -45,7 +44,6 @@ import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextArea;
-import javax.swing.UIManager;
 import javax.swing.border.EmptyBorder;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.client.RuneLite;
@@ -53,6 +51,7 @@ import net.runelite.client.RuneLiteProperties;
 import net.runelite.client.util.ImageUtil;
 import net.runelite.client.util.LinkBrowser;
 import net.runelite.client.util.VerificationException;
+import org.pushingpixels.substance.internal.SubstanceSynapse;
 
 @Slf4j
 public class FatalErrorDialog extends JDialog
@@ -72,17 +71,7 @@ public class FatalErrorDialog extends JDialog
 
 		try
 		{
-			UIManager.setLookAndFeel(UIManager.getCrossPlatformLookAndFeelClassName());
-		}
-		catch (Exception e)
-		{
-		}
-
-		UIManager.put("Button.select", ColorScheme.DARKER_GRAY_COLOR);
-
-		try
-		{
-			BufferedImage logo = ImageUtil.loadImageResource(FatalErrorDialog.class, "runelite_transparent.png");
+			BufferedImage logo = ImageUtil.loadImageResource(FatalErrorDialog.class, "openosrs_transparent.png");
 			setIconImage(logo);
 
 			JLabel runelite = new JLabel();
@@ -105,17 +94,18 @@ public class FatalErrorDialog extends JDialog
 			}
 		});
 
-		setTitle("Fatal error starting RuneLite");
+		setTitle("Fatal error starting OpenOSRS");
 		setLayout(new BorderLayout());
 
-		Container pane = getContentPane();
+		JPanel pane = (JPanel) getContentPane();
 		pane.setBackground(ColorScheme.DARKER_GRAY_COLOR);
+		pane.putClientProperty(SubstanceSynapse.COLORIZATION_FACTOR, 1.0);
 
 		JPanel leftPane = new JPanel();
 		leftPane.setBackground(ColorScheme.DARKER_GRAY_COLOR);
 		leftPane.setLayout(new BorderLayout());
 
-		title = new JLabel("There was a fatal error starting RuneLite");
+		title = new JLabel("There was a fatal error starting OpenOSRS");
 		title.setForeground(Color.WHITE);
 		title.setFont(font.deriveFont(16.f));
 		title.setBorder(new EmptyBorder(10, 10, 10, 10));
@@ -130,6 +120,7 @@ public class FatalErrorDialog extends JDialog
 		textArea.setWrapStyleWord(true);
 		textArea.setBorder(new EmptyBorder(10, 10, 10, 10));
 		textArea.setEditable(false);
+		textArea.setOpaque(false);
 		leftPane.add(textArea, BorderLayout.CENTER);
 
 		pane.add(leftPane, BorderLayout.CENTER);
@@ -210,7 +201,7 @@ public class FatalErrorDialog extends JDialog
 	{
 		if (err instanceof VerificationException || err instanceof GeneralSecurityException)
 		{
-			new FatalErrorDialog("RuneLite was unable to verify the security of its connection to the internet while " +
+			new FatalErrorDialog("OpenOSRS was unable to verify the security of its connection to the internet while " +
 				action + ". You may have a misbehaving antivirus, internet service provider, a proxy, or an incomplete" +
 				" java installation.")
 				.addHelpButtons()
@@ -220,7 +211,7 @@ public class FatalErrorDialog extends JDialog
 
 		if (err instanceof ConnectException)
 		{
-			new FatalErrorDialog("RuneLite is unable to connect to a required server while " + action + ". " +
+			new FatalErrorDialog("OpenOSRS is unable to connect to a required server while " + action + ". " +
 				"Please check your internet connection")
 				.addHelpButtons()
 				.open();
@@ -229,7 +220,7 @@ public class FatalErrorDialog extends JDialog
 
 		if (err instanceof UnknownHostException)
 		{
-			new FatalErrorDialog("RuneLite is unable to resolve the address of a required server while " + action + ". " +
+			new FatalErrorDialog("OpenOSRS is unable to resolve the address of a required server while " + action + ". " +
 				"Your DNS resolver may be misconfigured, pointing to an inaccurate resolver, or your internet connection may " +
 				"be down. ")
 				.addHelpButtons()
