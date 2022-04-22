@@ -50,7 +50,9 @@ public class MenuOptionClicked
 	 */
 	private final MenuEntry menuEntry;
 	/**
-	 * Whether or not the event has been consumed by a subscriber.
+	 * Get the widget this menu entry is on, if this is a menu entry
+	 * with an associated widget. Such as eg, CC_OP.
+	 * @return
 	 */
 	@Getter
 	@Setter
