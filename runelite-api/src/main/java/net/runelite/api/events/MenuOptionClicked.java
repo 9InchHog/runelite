@@ -107,7 +107,7 @@ public class MenuOptionClicked
 
 	public void setMenuTarget(String menuTarget)
 	{
-		menuEntry.setOption(menuTarget);
+		menuEntry.setTarget(menuTarget);
 	}
 
 	/**
