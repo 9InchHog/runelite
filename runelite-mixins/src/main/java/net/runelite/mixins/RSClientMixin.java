@@ -48,7 +48,6 @@ import net.runelite.api.FriendContainer;
 import net.runelite.api.GameState;
 import net.runelite.api.GrandExchangeOffer;
 import net.runelite.api.GraphicsObject;
-import net.runelite.api.HashTable;
 import net.runelite.api.HintArrowType;
 import net.runelite.api.Ignore;
 import net.runelite.api.IndexDataBase;
@@ -88,7 +87,6 @@ import net.runelite.api.StructComposition;
 import net.runelite.api.Tile;
 import net.runelite.api.VarPlayer;
 import net.runelite.api.Varbits;
-import net.runelite.api.WidgetNode;
 import net.runelite.api.WorldType;
 import net.runelite.api.clan.ClanChannel;
 import net.runelite.api.clan.ClanRank;
@@ -105,7 +103,6 @@ import net.runelite.api.events.GameStateChanged;
 import net.runelite.api.events.GrandExchangeOfferChanged;
 import net.runelite.api.events.GrandExchangeSearched;
 import net.runelite.api.events.ItemSpawned;
-import net.runelite.api.events.Menu;
 import net.runelite.api.events.MenuEntryAdded;
 import net.runelite.api.events.MenuOpened;
 import net.runelite.api.events.MenuOptionClicked;
@@ -942,7 +939,22 @@ public abstract class RSClientMixin implements RSClient
 	@Override
 	public MenuEntry[] getMenuEntries()
 	{
-		return Arrays.copyOf(rl$menuEntries, client.getMenuOptionCount());
+		RSRuneLiteMenuEntry[] menuEntries = Arrays.copyOf(rl$menuEntries, client.getMenuOptionCount());
+
+		for (RSRuneLiteMenuEntry menuEntry : menuEntries)
+		{
+			if (menuEntry.getOption() == null)
+			{
+				menuEntry.setOption("null");
+			}
+
+			if (menuEntry.getTarget() == null)
+			{
+				menuEntry.setTarget("null");
+			}
+		}
+
+		return menuEntries;
 	}
 
 	@Inject
@@ -1060,6 +1072,16 @@ public abstract class RSClientMixin implements RSClient
 		}
 		else if (optionCount == tmpOptionsCount + 1)
 		{
+			if (client.getMenuOptions()[tmpOptionsCount] == null)
+			{
+				client.getMenuOptions()[tmpOptionsCount] = "null";
+			}
+
+			if (client.getMenuTargets()[tmpOptionsCount] == null)
+			{
+				client.getMenuTargets()[tmpOptionsCount] = "null";
+			}
+
 			String menuOption = client.getMenuOptions()[tmpOptionsCount];
 			String menuTarget = client.getMenuTargets()[tmpOptionsCount];
 			int menuOpcode = client.getMenuOpcodes()[tmpOptionsCount];
@@ -1791,15 +1813,6 @@ public abstract class RSClientMixin implements RSClient
 			}
 		}
 
-		if (opcode == MenuAction.WIDGET_CONTINUE.getId())
-		{
-			Widget widget = client.getWidget(param1);
-			if (widget == null || param0 > -1 && widget.getChild(param0) == null)
-			{
-				return;
-			}
-		}
-
 		copy$menuAction(event.getParam0(), event.getParam1(),
 			event.getMenuAction() == UNKNOWN ? opcode : event.getMenuAction().getId(),
 			event.getId(), event.getMenuOption(), event.getMenuTarget(),
@@ -1934,19 +1947,12 @@ public abstract class RSClientMixin implements RSClient
 	@Inject
 	public static void preRenderWidgetLayer(Widget[] widgets, int parentId, int minX, int minY, int maxX, int maxY, int x, int y, int var8)
 	{
-		@SuppressWarnings("unchecked") HashTable<WidgetNode> componentTable = client.getComponentTable();
-
-		for (int i = 0; i < widgets.length; i++)
+		for (Widget value : widgets)
 		{
-			RSWidget widget = (RSWidget) widgets[i];
+			RSWidget widget = (RSWidget) value;
 			if (widget == null || widget.getRSParentId() != parentId || widget.isSelfHidden())
 			{
 				continue;
-			}
-
-			if (parentId != -1)
-			{
-				widget.setRenderParentId(parentId);
 			}
 
 			final int renderX = x + widget.getRelativeX();
@@ -1968,24 +1974,6 @@ public abstract class RSClientMixin implements RSClient
 				viewportColor = outAlpha << 24 | c1 + c2;
 				widget.setHidden(true);
 				hiddenWidgets.add(widget);
-			}
-			else
-			{
-				WidgetNode childNode = componentTable.get(widget.getId());
-				if (childNode != null)
-				{
-					int widgetId = widget.getId();
-					int groupId = childNode.getId();
-					RSWidget[] children = client.getWidgets()[groupId];
-
-					for (RSWidget child : children)
-					{
-						if (child.getRSParentId() == -1)
-						{
-							child.setRenderParentId(widgetId);
-						}
-					}
-				}
 			}
 		}
 	}
@@ -2222,19 +2210,6 @@ public abstract class RSClientMixin implements RSClient
 		}
 
 		return false;
-	}
-
-	@Copy("menu")
-	@Replace("menu")
-	void copy$menu()
-	{
-		Menu menu = Menu.MENU;
-		menu.reset();
-		getCallbacks().post(menu);
-		if (menu.shouldRun())
-		{
-			copy$menu();
-		}
 	}
 
 	@Inject
