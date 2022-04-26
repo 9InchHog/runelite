@@ -240,7 +240,7 @@ public class SpoonGroundItemsOverlay extends Overlay
 				{
 					itemStringBuilder.append(" (")
 						.append(QuantityFormatter.quantityToStackSize(item.getQuantity()))
-						.append(")");
+						.append(')');
 				}
 			}
 

@@ -791,7 +791,7 @@ public class SpoonGroundItemsPlugin extends Plugin
 			{
 				notificationStringBuilder.append(" (")
 					.append(QuantityFormatter.quantityToStackSize(item.getQuantity()))
-					.append(")");
+					.append(')');
 			}
 		}
 		

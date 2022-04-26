@@ -837,7 +837,7 @@ public class SpoonSlayerPlugin extends Plugin
         sb.append(task.getTask());
         if (!Strings.isNullOrEmpty(task.getLocation()))
         {
-            sb.append(" (").append(task.getLocation()).append(")");
+            sb.append(" (").append(task.getLocation()).append(')');
         }
         sb.append(": ");
         if (killed < 0)
