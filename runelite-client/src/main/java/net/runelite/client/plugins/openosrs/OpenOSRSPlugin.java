@@ -31,6 +31,8 @@ import javax.annotation.Nullable;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import javax.swing.JOptionPane;
+
+import com.openosrs.client.config.OpenOSRSConfig;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.Client;
 import net.runelite.client.config.ConfigManager;
@@ -53,6 +55,9 @@ import net.runelite.client.util.ImageUtil;
 @Slf4j
 public class OpenOSRSPlugin extends Plugin
 {
+	@Inject
+	private OpenOSRSConfig config;
+
 	@Inject
 	private ConfigManager configManager;
 
@@ -84,6 +89,10 @@ public class OpenOSRSPlugin extends Plugin
 			.panel(panel)
 			.build();
 		clientToolbar.addNavigation(navButton);
+
+		if (!config.hideOprsManager()) {
+			clientToolbar.addNavigation(navButton);
+		}
 	}
 
 	@Override
@@ -106,6 +115,14 @@ public class OpenOSRSPlugin extends Plugin
 			{
 				JOptionPane.showMessageDialog(ClientUI.getFrame(), "You can't disable hardware acceleration on MacOS", "Critical situation prevented", JOptionPane.ERROR_MESSAGE);
 				configManager.setConfiguration("openosrs", "disableHw", false);
+			}
+		}
+
+		if (event.getGroup().equals("openosrs")) {
+			if (config.hideOprsManager() && navButton != null) {
+				clientToolbar.removeNavigation(navButton);
+			} else if (!config.hideOprsManager()) {
+				clientToolbar.addNavigation(navButton);
 			}
 		}
 	}

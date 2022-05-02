@@ -118,7 +118,7 @@ public class ClientUI
 	private static final String CONFIG_CLIENT_SIDEBAR_CLOSED = "clientSidebarClosed";
 	private static final String CONFIG_OPACITY = "enableOpacity";
 	private static final String CONFIG_OPACITY_AMOUNT = "opacityPercentage";
-	public static final BufferedImage ICON = ImageUtil.loadImageResource(ClientUI.class, "/openosrs.png");
+	public static final BufferedImage ICON = ImageUtil.loadImageResource(ClientUI.class, "/runelite.png");
 
 	@Getter
 	private TrayIcon trayIcon;
@@ -624,9 +624,9 @@ public class ClientUI
 		if (client != null && !(client instanceof Client))
 		{
 			SwingUtilities.invokeLater(() -> JOptionPane.showMessageDialog(frame,
-				"OpenOSRS has not yet been updated to work with the latest\n"
+				"RuneLite has not yet been updated to work with the latest\n"
 					+ "game update, it will work with reduced functionality until then.",
-				"OpenOSRS is outdated", INFORMATION_MESSAGE));
+				"RuneLite is outdated", INFORMATION_MESSAGE));
 		}
 	}
 
@@ -699,7 +699,7 @@ public class ClientUI
 				}
 			}
 			System.exit(0);
-		}, "OpenOSRS Shutdown").start();
+		}, "RuneLite Shutdown").start();
 	}
 
 	/**

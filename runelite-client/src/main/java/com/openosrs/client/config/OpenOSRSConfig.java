@@ -44,8 +44,8 @@ public interface OpenOSRSConfig extends Config
 	@AllArgsConstructor
 	enum BootstrapMode
 	{
-		STABLE("Stable"),
-		NIGHTLY("Nightly");
+		STABLE("OPRS"),
+		NIGHTLY("RuneLite");
 
 		private final String name;
 
@@ -186,7 +186,7 @@ public interface OpenOSRSConfig extends Config
 	}
 
 	@ConfigItem(
-		keyName = "externalRepos",
+		keyName = "sExternalRepos",
 		name = "",
 		description = "",
 		hidden = true
@@ -197,7 +197,7 @@ public interface OpenOSRSConfig extends Config
 	}
 
 	@ConfigItem(
-		keyName = "externalRepos",
+		keyName = "sExternalRepos",
 		name = "",
 		description = "",
 		hidden = true
@@ -213,5 +213,35 @@ public interface OpenOSRSConfig extends Config
 	default boolean warning()
 	{
 		return true;
+	}
+
+	@ConfigItem(
+		keyName = "sGetDisabledPlugins",
+		name = "",
+		description = "",
+		hidden = true
+	)
+	default String sGetDisabledPlugins()
+	{
+		return "";
+	}
+
+	@ConfigItem(
+		keyName = "sGetDisabledPlugins",
+		name = "",
+		description = "",
+		hidden = true
+	)
+	void sSetDisabledPlugins(String val);
+
+	@ConfigItem(
+		keyName = "hideOprsManager",
+		name = "",
+		description = "",
+		hidden = true
+	)
+	default boolean hideOprsManager()
+	{
+		return false;
 	}
 }

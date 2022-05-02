@@ -69,10 +69,13 @@ import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Singleton;
 import javax.swing.JOptionPane;
+
+import com.splugins.sExternalPluginManager;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
+import net.runelite.api.Client;
 import net.runelite.client.RuneLite;
 import net.runelite.client.config.Config;
 import net.runelite.client.config.ConfigManager;
@@ -96,7 +99,7 @@ import org.pf4j.update.VerifyException;
 @Singleton
 public class OPRSExternalPluginManager
 {
-	public static final String DEFAULT_PLUGIN_REPOS = "";
+	public static final String DEFAULT_PLUGIN_REPOS = "SpoonLite:https://raw.githubusercontent.com/9InchHog/plugins-release/master/;";
 	static final String DEVELOPMENT_MANIFEST_PATH = "build/tmp/jar/MANIFEST.MF";
 
 	public static ArrayList<ClassLoader> pluginClassLoaders = new ArrayList<>();
@@ -120,14 +123,22 @@ public class OPRSExternalPluginManager
 	@Getter(AccessLevel.PUBLIC)
 	private final Map<String, Map<String, String>> pluginsInfoMap = new HashMap<>();
 	@Inject
+	@Getter(AccessLevel.PUBLIC)
 	private Groups groups;
 	@Getter(AccessLevel.PUBLIC)
 	private OPRSUpdateManager updateManager;
+	@Inject
+	public Client client;
+	@Inject
+	private sExternalPluginManager sPlugins;
+	public static final Map<String, String> hashedPlugins = new HashMap<>();
 	@Inject
 	@Named("safeMode")
 	private boolean safeMode;
 	@Setter
 	boolean isOutdated;
+	@Getter
+	public final static ArrayList<String> pluginsPackages = new ArrayList<>();
 
 	public void setupInstance()
 	{
@@ -246,6 +257,7 @@ public class OPRSExternalPluginManager
 				log.error("Could not load plugins", ex);
 			}
 		}
+		sPlugins.sPlugins();
 	}
 
 	public void startExternalUpdateManager()
@@ -807,6 +819,12 @@ public class OPRSExternalPluginManager
 					}}
 				);
 
+				String[] packageName = plugin.getClass().getPackage().toString().split("\\.");
+				if (packageName.length > 4) {
+					pluginsPackages.remove(packageName[4]);
+					pluginsPackages.add(packageName[4]);
+				}
+
 				scannedPlugins.add(plugin);
 			}
 		}
@@ -1206,5 +1224,15 @@ public class OPRSExternalPluginManager
 	private static String urlEncode(String s)
 	{
 		return URLEncoder.encode(s, StandardCharsets.UTF_8);
+	}
+
+	public void sDisablePlugin(String PluginID)
+	{
+		sPlugins.sDisablePlugin(PluginID);
+	}
+
+	public void sEnablePlugin(String PluginID)
+	{
+		sPlugins.sEnablePlugin(PluginID);
 	}
 }
