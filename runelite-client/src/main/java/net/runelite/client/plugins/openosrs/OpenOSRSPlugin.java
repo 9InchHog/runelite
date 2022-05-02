@@ -26,41 +26,35 @@
  */
 package net.runelite.client.plugins.openosrs;
 
-import ch.qos.logback.classic.Logger;
-import com.openosrs.client.config.OpenOSRSConfig;
 import java.awt.image.BufferedImage;
 import javax.annotation.Nullable;
 import javax.inject.Inject;
 import javax.inject.Singleton;
+import javax.swing.JOptionPane;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.Client;
-import net.runelite.client.config.Keybind;
+import net.runelite.client.config.ConfigManager;
 import net.runelite.client.eventbus.Subscribe;
 import net.runelite.client.events.ConfigChanged;
-import net.runelite.client.input.KeyManager;
 import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDescriptor;
 import net.runelite.client.plugins.openosrs.externals.ExternalPluginManagerPanel;
 import net.runelite.client.ui.ClientToolbar;
+import net.runelite.client.ui.ClientUI;
 import net.runelite.client.ui.NavigationButton;
-import net.runelite.client.util.HotkeyListener;
 import net.runelite.client.util.ImageUtil;
-import org.slf4j.LoggerFactory;
 
 @PluginDescriptor(
-		loadWhenOutdated = true, // prevent users from disabling
-		hidden = true, // prevent users from disabling
-		name = "OpenOSRS"
+	loadWhenOutdated = true, // prevent users from disabling
+	hidden = true, // prevent users from disabling
+	name = "OpenOSRS"
 )
 @Singleton
 @Slf4j
 public class OpenOSRSPlugin extends Plugin
 {
 	@Inject
-	private OpenOSRSConfig config;
-
-	@Inject
-	private KeyManager keyManager;
+	private ConfigManager configManager;
 
 	@Nullable
 	@Inject
@@ -70,23 +64,6 @@ public class OpenOSRSPlugin extends Plugin
 	private ClientToolbar clientToolbar;
 
 	private NavigationButton navButton;
-
-	private final HotkeyListener hotkeyListener = new HotkeyListener(() -> this.keybind)
-	{
-		@Override
-		public void hotkeyPressed()
-		{
-			if (client == null)
-			{
-				return;
-			}
-			detach = !detach;
-			client.setOculusOrbState(detach ? 1 : 0);
-			client.setOculusOrbNormalSpeed(detach ? 36 : 12);
-		}
-	};
-	private boolean detach;
-	private Keybind keybind;
 
 	@Override
 	protected void startUp()
@@ -101,17 +78,12 @@ public class OpenOSRSPlugin extends Plugin
 		final BufferedImage icon = ImageUtil.loadImageResource(getClass(), "externalmanager_icon.png");
 
 		navButton = NavigationButton.builder()
-				.tooltip("External Plugin Manager")
-				.icon(icon)
-				.priority(1)
-				.panel(panel)
-				.build();
-		if (!config.hideOprsManager()) {
-			clientToolbar.addNavigation(navButton);
-		}
-
-		this.keybind = config.detachHotkey();
-		keyManager.registerKeyListener(hotkeyListener);
+			.tooltip("External Plugin Manager")
+			.icon(icon)
+			.priority(1)
+			.panel(panel)
+			.build();
+		clientToolbar.addNavigation(navButton);
 	}
 
 	@Override
@@ -124,29 +96,17 @@ public class OpenOSRSPlugin extends Plugin
 	}
 
 	@Subscribe
-	private void onConfigChanged(ConfigChanged event)
+	protected void onConfigChanged(ConfigChanged event)
 	{
-		if (!event.getGroup().equals("openosrs"))
+		if (OS.getOs() == OS.OSType.MacOS && event.getGroup().equals("openosrs") && event.getKey().equals("disableHw"))
 		{
-			return;
-		}
+			boolean disableHw = configManager.getConfiguration("openosrs", "disableHw", Boolean.class);
 
-		this.keybind = config.detachHotkey();
-
-		if (event.getKey().equals("shareLogs") && !config.shareLogs())
-		{
-			final Logger logger = (Logger) LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME);
-			logger.detachAppender("Sentry");
-		}
-
-		if (config.hideOprsManager() && navButton != null)
-		{
-			clientToolbar.removeNavigation(navButton);
-		}
-
-		if (!config.hideOprsManager())
-		{
-			clientToolbar.addNavigation(navButton);
+			if (disableHw)
+			{
+				JOptionPane.showMessageDialog(ClientUI.getFrame(), "You can't disable hardware acceleration on MacOS", "Critical situation prevented", JOptionPane.ERROR_MESSAGE);
+				configManager.setConfiguration("openosrs", "disableHw", false);
+			}
 		}
 	}
 }

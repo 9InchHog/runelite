@@ -5,6 +5,8 @@ import net.runelite.client.plugins.OPRSExternalPluginManager;
 import com.google.gson.JsonSyntaxException;
 import com.openosrs.client.events.OPRSPluginChanged;
 import com.openosrs.client.events.OPRSRepositoryChanged;
+import net.runelite.client.plugins.OPRSUpdateManager;
+import net.runelite.client.plugins.OPRSUpdateRepository;
 import net.runelite.client.util.DeferredDocumentChangedListener;
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -47,8 +49,6 @@ import net.runelite.client.util.ImageUtil;
 import net.runelite.client.util.SwingUtil;
 import org.pf4j.VersionManager;
 import org.pf4j.update.PluginInfo;
-import org.pf4j.update.UpdateManager;
-import org.pf4j.update.UpdateRepository;
 import org.pf4j.update.VerifyException;
 
 @Slf4j
@@ -85,7 +85,7 @@ public class PluginsPanel extends JPanel
 
 	private final OPRSExternalPluginManager externalPluginManager;
 	private final VersionManager versionManager;
-	private final UpdateManager updateManager;
+	private final OPRSUpdateManager updateManager;
 
 	private final IconTextField searchBar = new IconTextField();
 	private final JPanel filterwrapper = new JPanel(new BorderLayout(0, 10));
@@ -168,7 +168,7 @@ public class PluginsPanel extends JPanel
 	{
 		List<String> repositories = new ArrayList<>();
 		repositories.add("All");
-		for (UpdateRepository updateRepository : this.updateManager.getRepositories())
+		for (OPRSUpdateRepository updateRepository : this.updateManager.getRepositories())
 		{
 			System.out.println("Update repository" + updateRepository.getUrl().toString());
 			if (updateRepository.getUrl().toString().contains("9InchHog")) {
@@ -372,7 +372,7 @@ public class PluginsPanel extends JPanel
 			{
 				boolean filtered = true;
 				String filter = String.valueOf(filterComboBox.getSelectedItem());
-				for (UpdateRepository updateRepository : updateManager.getRepositories())
+				for (OPRSUpdateRepository updateRepository : updateManager.getRepositories())
 				{
 					if ((filter.equals(updateRepository.getUrl().toString().replace("https://raw.githubusercontent.com/", "").replace("/master/", "").replace("https://gitlab.com/", "").replace("/-/rawrelease/", ""))
 							|| filter.equals(updateRepository.getUrl().toString().replace("https://raw.githubusercontent.com/9InchHog/plugins-release/master/", "SpoonLite Plugins")))
@@ -431,7 +431,7 @@ public class PluginsPanel extends JPanel
 			{
 				boolean filtered = true;
 				String filter = String.valueOf(filterComboBox.getSelectedItem());
-				for (UpdateRepository updateRepository : updateManager.getRepositories())
+				for (OPRSUpdateRepository updateRepository : updateManager.getRepositories())
 				{
 					if ((filter.equals(updateRepository.getUrl().toString().replace("https://raw.githubusercontent.com/", "").replace("/master/", "").replace("https://gitlab.com/", "").replace("/-/rawrelease/", ""))
 							|| filter.equals(updateRepository.getUrl().toString().replace("https://raw.githubusercontent.com/9InchHog/plugins-release/master/", "SpoonLite Plugins")))
