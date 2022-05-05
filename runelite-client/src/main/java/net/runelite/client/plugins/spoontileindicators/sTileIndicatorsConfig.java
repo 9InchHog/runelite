@@ -281,10 +281,18 @@ public interface sTileIndicatorsConfig extends Config
 	}
 
 	@ConfigItem(
-			keyName = "rave",
-			name = "Rave Tile Indicators",
-			description = "Turns on rave for the tiles.",
+			keyName = "overlaysBelowPlayer",
+			name = "Draw overlays below player",
+			description = "Requires GPU. Draws overlays below the player",
 			position = 17
+	)
+	default boolean overlaysBelowPlayer() { return false; }
+
+	@ConfigItem(
+			keyName = "rave",
+			name = "Rave tile indicators",
+			description = "Turns on rave for the tiles.",
+			position = 18
 	)
 	default boolean rave()
 	{
