@@ -65,12 +65,13 @@ import net.runelite.client.ui.JagexColors;
 import net.runelite.client.ui.overlay.tooltip.Tooltip;
 import net.runelite.client.ui.overlay.tooltip.TooltipManager;
 import net.runelite.client.util.ColorUtil;
+import net.runelite.client.util.HotkeyListener;
 import org.slf4j.Marker;
 import org.slf4j.MarkerFactory;
 
 @Singleton
 @Slf4j
-public class OverlayRenderer extends MouseAdapter implements KeyListener
+public class OverlayRenderer extends MouseAdapter
 {
 	private static final Marker DEDUPLICATE = MarkerFactory.getMarker("DEDUPLICATE");
 	private static final int BORDER = 5;
@@ -114,6 +115,8 @@ public class OverlayRenderer extends MouseAdapter implements KeyListener
 	private Overlay focusedOverlay;
 	private Overlay prevFocusedOverlay;
 
+	private final HotkeyListener hotkeyListener;
+
 	@Setter
 	private boolean shouldRender = true;
 
@@ -134,7 +137,27 @@ public class OverlayRenderer extends MouseAdapter implements KeyListener
 		this.clientUI = clientUI;
 		this.tooltipManager = tooltipManager;
 		this.eventBus = eventBus;
-		keyManager.registerKeyListener(this);
+
+		this.hotkeyListener = new HotkeyListener(runeLiteConfig::dragHotkey)
+		{
+			@Override
+			public void hotkeyPressed()
+			{
+				inOverlayManagingMode = true;
+			}
+
+			@Override
+			public void hotkeyReleased()
+			{
+				if (inOverlayManagingMode)
+				{
+					inOverlayManagingMode = false;
+					resetOverlayManagementMode();
+				}
+			}
+		};
+
+		keyManager.registerKeyListener(hotkeyListener);
 		mouseManager.registerMouseListener(this);
 		eventBus.register(this);
 	}
@@ -732,32 +755,6 @@ public class OverlayRenderer extends MouseAdapter implements KeyListener
 		resetOverlayManagementMode();
 		mouseEvent.consume();
 		return mouseEvent;
-	}
-
-	@Override
-	public void keyTyped(KeyEvent e)
-	{
-	}
-
-	@Override
-	public void keyPressed(KeyEvent e)
-	{
-		//if (e.isAltDown())
-		if (runeLiteConfig.overlayKey().matches(e))
-		{
-			inOverlayManagingMode = true;
-		}
-	}
-
-	@Override
-	public void keyReleased(KeyEvent e)
-	{
-		//if (!e.isAltDown() && inOverlayManagingMode)
-		if (runeLiteConfig.overlayKey().matches(e) && inOverlayManagingMode)
-		{
-			inOverlayManagingMode = false;
-			resetOverlayManagementMode();
-		}
 	}
 
 	private void safeRender(Client client, Overlay overlay, OverlayLayer layer, Graphics2D graphics, Point point)

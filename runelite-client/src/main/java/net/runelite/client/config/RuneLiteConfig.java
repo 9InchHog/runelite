@@ -527,12 +527,12 @@ public interface RuneLiteConfig extends Config
 	default boolean rlCheckbox() { return true; }
 
 	@ConfigItem(
-			keyName = "overlayKey",
-			name = "Manage Overlay Key",
-			description = "Sets the key to use to manage overlays. Accepts modifiers.",
+			keyName = "dragHotkey",
+			name = "Drag Hotkey",
+			description = "Configures the hotkey used to drag UI elements around",
 			position = 54
 	)
-	default Keybind overlayKey() { return new Keybind(KeyEvent.VK_ALT, InputEvent.ALT_DOWN_MASK); }
+	default Keybind dragHotkey() {return new Keybind(KeyEvent.VK_ALT, InputEvent.ALT_DOWN_MASK);}
 
 	@ConfigItem(
 			keyName = "raveSpeed",
