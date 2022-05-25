@@ -338,9 +338,10 @@ public class OverlayManager
 		{
 			overlay.setPreferredLocation(location);
 		}
-		else
+		else if (location != null)
 		{
 			log.info("Resetting preferred location of non-movable overlay {} (class {})", overlay.getName(), overlay.getClass().getName());
+			overlay.setPreferredLocation(null);
 			saveOverlayLocation(overlay);
 		}
 
@@ -350,9 +351,10 @@ public class OverlayManager
 		{
 			overlay.setPreferredPosition(position);
 		}
-		else
+		else if (position != null)
 		{
 			log.info("Resetting preferred position of non-snappable overlay {} (class {})", overlay.getName(), overlay.getClass().getName());
+			overlay.setPreferredPosition(null);
 			saveOverlayPosition(overlay);
 		}
 	}
