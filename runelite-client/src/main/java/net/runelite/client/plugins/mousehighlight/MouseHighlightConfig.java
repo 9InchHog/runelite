@@ -63,4 +63,15 @@ public interface MouseHighlightConfig extends Config
 	{
 		return false;
 	}
+
+	@ConfigItem(
+			position = 2,
+			keyName = "removeLevels",
+			name = "Remove Levels from Tooltips",
+			description = "Removes the levels from tooltips"
+	)
+	default boolean removeLevels()
+	{
+		return false;
+	}
 }

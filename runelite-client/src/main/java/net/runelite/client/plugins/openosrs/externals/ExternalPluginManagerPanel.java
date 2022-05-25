@@ -10,15 +10,7 @@ import java.awt.image.BufferedImage;
 import java.net.MalformedURLException;
 import java.net.URL;
 import javax.inject.Inject;
-import javax.swing.ImageIcon;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTabbedPane;
-import javax.swing.JTextField;
-import javax.swing.UIManager;
+import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.client.eventbus.EventBus;
@@ -98,9 +90,20 @@ public class ExternalPluginManagerPanel extends PluginPanel
 			@Override
 			public void mousePressed(MouseEvent mouseEvent)
 			{
-				if (userDidNotAcceptRisk())
+				if (externalPluginManager.getWarning())
 				{
-					return;
+					JCheckBox checkbox = new JCheckBox("Don't show again.");
+					int answer = showWarningDialog(checkbox);
+
+					if (answer == 1 || answer == -1)
+					{
+						return;
+					}
+
+					if (checkbox.isSelected())
+					{
+						externalPluginManager.setWarning(false);
+					}
 				}
 
 				JTextField owner = new JTextField();
@@ -154,9 +157,20 @@ public class ExternalPluginManagerPanel extends PluginPanel
 			@Override
 			public void mousePressed(MouseEvent mouseEvent)
 			{
-				if (userDidNotAcceptRisk())
+				if (externalPluginManager.getWarning())
 				{
-					return;
+					JCheckBox checkbox = new JCheckBox("Don't show again.");
+					int answer = showWarningDialog(checkbox);
+
+					if (answer == 1 || answer == -1)
+					{
+						return;
+					}
+
+					if (checkbox.isSelected())
+					{
+						externalPluginManager.setWarning(false);
+					}
 				}
 
 				JTextField id = new JTextField();
@@ -266,36 +280,23 @@ public class ExternalPluginManagerPanel extends PluginPanel
 		return mainTabPane;
 	}
 
-	private boolean userDidNotAcceptRisk()
+	private int showWarningDialog(JCheckBox checkbox)
 	{
-		Font font = (Font) UIManager.get("OptionPane.buttonFont");
-		int answer = showWarningDialog();
-		UIManager.put("OptionPane.buttonFont", font);
-		return answer != 0;
-	}
-
-	private int showWarningDialog()
-	{
-		Object[] options = {"Okay, I accept the risk", "Never mind, turn back"};
+		Object[] options = {"Okay, I accept the risk", "Never mind, turn back", checkbox};
 		JLabel label = new JLabel("<html><p>" +
-			"If you were messaged in game or on Discord and " +
-			"were told to add this repo, you may be getting lured/phished/hacked. " +
-			"Adding plugins from unverified sources may put your account " +
-			"or personal information at risk!</p></html>"
+				"If you were messaged in game or on Discord and were told to add this repo, <br>" +
+				"you may be getting <u>lured/phished/hacked</u>. " + "Adding plugins from unverified <br>" +
+				"sources may put your account or personal information at risk!</p></html>"
 		);
-		Font font = new Font(FontManager.getRunescapeFont().getName(), FontManager.getRunescapeFont().getStyle(), 32);
-		UIManager.put("OptionPane.buttonFont", font);
-		label.setPreferredSize(new Dimension(450, 200));
-		label.setFont(font);
 
 		return JOptionPane.showOptionDialog(new JFrame(),
-			label,
-			"Account security warning",
-			JOptionPane.YES_NO_OPTION,
-			JOptionPane.WARNING_MESSAGE,
-			null,
-			options,
-			options[1]);
+				label,
+				"Account security warning",
+				JOptionPane.YES_NO_OPTION,
+				JOptionPane.WARNING_MESSAGE,
+				null,
+				options,
+				options[0]);
 	}
 
 	static JScrollPane wrapContainer(final JPanel container)

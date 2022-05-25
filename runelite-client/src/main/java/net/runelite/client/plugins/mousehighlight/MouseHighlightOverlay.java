@@ -26,14 +26,12 @@ package net.runelite.client.plugins.mousehighlight;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableSet;
-import java.awt.Dimension;
-import java.awt.Graphics2D;
+
+import java.awt.*;
 import java.util.Set;
 import javax.inject.Inject;
-import net.runelite.api.Client;
-import net.runelite.api.MenuAction;
-import net.runelite.api.MenuEntry;
-import net.runelite.api.VarClientInt;
+
+import net.runelite.api.*;
 import net.runelite.api.widgets.WidgetID;
 import net.runelite.api.widgets.WidgetInfo;
 import net.runelite.client.ui.overlay.Overlay;
@@ -41,6 +39,9 @@ import net.runelite.client.ui.overlay.OverlayLayer;
 import net.runelite.client.ui.overlay.OverlayPosition;
 import net.runelite.client.ui.overlay.tooltip.Tooltip;
 import net.runelite.client.ui.overlay.tooltip.TooltipManager;
+import net.runelite.api.util.Text;
+import net.runelite.client.util.ColorUtil;
+import org.apache.commons.lang3.StringUtils;
 
 class MouseHighlightOverlay extends Overlay
 {
@@ -77,6 +78,15 @@ class MouseHighlightOverlay extends Overlay
 	private final Client client;
 	private final MouseHighlightConfig config;
 
+	private static final Set<MenuAction> NPC_MENU_ACTIONS = ImmutableSet.of(
+			MenuAction.NPC_FIRST_OPTION,
+			MenuAction.NPC_SECOND_OPTION,
+			MenuAction.NPC_THIRD_OPTION,
+			MenuAction.NPC_FOURTH_OPTION,
+			MenuAction.NPC_FIFTH_OPTION,
+			MenuAction.WIDGET_TARGET_ON_NPC,
+			MenuAction.ITEM_USE_ON_NPC);
+
 	@Inject
 	MouseHighlightOverlay(Client client, TooltipManager tooltipManager, MouseHighlightConfig config)
 	{
@@ -110,6 +120,9 @@ class MouseHighlightOverlay extends Overlay
 		String option = menuEntry.getOption();
 		MenuAction type = menuEntry.getType();
 
+		MenuAction menuAction = MenuAction.of(type.getId());
+		String targetStripped = Text.removeLevels(target);
+
 		if (type == MenuAction.RUNELITE_OVERLAY || type == MenuAction.CC_OP_LOW_PRIORITY)
 		{
 			// These are always right click only
@@ -119,6 +132,14 @@ class MouseHighlightOverlay extends Overlay
 		if (Strings.isNullOrEmpty(option))
 		{
 			return null;
+		}
+
+		for (NPC npcs : client.getNpcs())
+		{
+			if (config.removeLevels() && npcs != null && npcs.getName() != null && target.contains(npcs.getName()) && NPC_MENU_ACTIONS.contains(menuAction))
+			{
+				target = targetStripped;
+			}
 		}
 
 		// Trivial options that don't need to be highlighted, add more as they appear.

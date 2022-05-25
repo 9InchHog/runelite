@@ -149,6 +149,17 @@ public class Text
 		return SB.toString();
 	}
 
+	/**
+	 * Removes levels from the given string.
+	 *
+	 * @param str The string to remove levels from.
+	 * @return The given string with all levels removed from it.
+	 */
+	public static String removeLevels(String str)
+	{
+		return str.contains("  (level-") ? str.substring(0, str.indexOf("  (level-")).trim() : str;
+	}
+
 	public static String removeTags(String str)
 	{
 		return removeTags(str, false);
