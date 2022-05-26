@@ -24,9 +24,12 @@
  */
 package net.runelite.api.events;
 
+import javax.annotation.Nullable;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
+import lombok.ToString;
 import net.runelite.api.MenuAction;
 import net.runelite.api.MenuEntry;
 import net.runelite.api.widgets.Widget;
@@ -43,12 +46,16 @@ import net.runelite.api.widgets.Widget;
  * it seems that this event still triggers with the "Cancel" action.
  */
 @RequiredArgsConstructor
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
+@ToString(onlyExplicitlyIncluded = true)
 public class MenuOptionClicked
 {
 	/**
 	 * The clicked menu entry
 	 */
+	@Getter
 	private final MenuEntry menuEntry;
+
 	/**
 	 * Get the widget this menu entry is on, if this is a menu entry
 	 * with an associated widget. Such as eg, CC_OP.
@@ -61,6 +68,8 @@ public class MenuOptionClicked
 	/**
 	 * Action parameter 0. Its value depends on the menuAction.
 	 */
+	@EqualsAndHashCode.Include
+	@ToString.Include
 	public int getParam0()
 	{
 		return menuEntry.getParam0();
@@ -74,6 +83,8 @@ public class MenuOptionClicked
 	/**
 	 * Action parameter 1. Its value depends on the menuAction.
 	 */
+	@EqualsAndHashCode.Include
+	@ToString.Include
 	public int getParam1()
 	{
 		return menuEntry.getParam1();
@@ -87,6 +98,8 @@ public class MenuOptionClicked
 	/**
 	 * The option text added to the menu.
 	 */
+	@EqualsAndHashCode.Include
+	@ToString.Include
 	public String getMenuOption()
 	{
 		return menuEntry.getOption();
@@ -100,6 +113,8 @@ public class MenuOptionClicked
 	/**
 	 * The target of the action.
 	 */
+	@EqualsAndHashCode.Include
+	@ToString.Include
 	public String getMenuTarget()
 	{
 		return menuEntry.getTarget();
@@ -113,6 +128,8 @@ public class MenuOptionClicked
 	/**
 	 * The action performed.
 	 */
+	@EqualsAndHashCode.Include
+	@ToString.Include
 	public MenuAction getMenuAction()
 	{
 		return menuEntry.getType();
@@ -126,6 +143,8 @@ public class MenuOptionClicked
 	/**
 	 * The ID of the object, actor, or item that the interaction targets.
 	 */
+	@EqualsAndHashCode.Include
+	@ToString.Include
 	public int getId()
 	{
 		return menuEntry.getIdentifier();
@@ -170,6 +189,7 @@ public class MenuOptionClicked
 	 * with an associated widget. Such as eg, CC_OP.
 	 * @return
 	 */
+	@Nullable
 	public Widget getWidget()
 	{
 		return menuEntry.getWidget();

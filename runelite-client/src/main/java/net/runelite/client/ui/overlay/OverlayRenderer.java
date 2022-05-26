@@ -362,7 +362,7 @@ public class OverlayRenderer extends MouseAdapter
 
 			if (!bounds.isEmpty())
 			{
-				if (inOverlayManagingMode)
+				if (inOverlayManagingMode && overlay.isMovable())
 				{
 					Color boundsColor;
 					if (inOverlayResizingMode && currentManagedOverlay == overlay)
@@ -412,7 +412,7 @@ public class OverlayRenderer extends MouseAdapter
 
 		// See if we've clicked on an overlay
 		currentManagedOverlay = lastHoveredOverlay;
-		if (currentManagedOverlay == null)
+		if (currentManagedOverlay == null || !currentManagedOverlay.isMovable())
 		{
 			return mouseEvent;
 		}
