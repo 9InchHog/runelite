@@ -59,6 +59,10 @@ public class EntityHiderPlugin extends Plugin
 	@Inject
 	private Hooks hooks;
 
+	int unhideFailSafeTick = -1;
+	public boolean temporaryHide = false;
+	public static EntityHiderPlugin instance = null;
+
 	private boolean hideOthers;
 	private boolean hideOthers2D;
 	private boolean hideFriends;
@@ -87,6 +91,7 @@ public class EntityHiderPlugin extends Plugin
 	@Override
 	protected void startUp()
 	{
+		instance = this;
 		updateConfig();
 
 		hooks.registerRenderableDrawListener(drawListener);
@@ -169,17 +174,17 @@ public class EntityHiderPlugin extends Plugin
 
 			if (player.isFriend())
 			{
-				return !(drawingUI ? !hideFriends2D : !hideFriends);
+				return !(drawingUI ? hideFriends2D : hideFriends);
 			}
 
 			if (player.isFriendsChatMember())
 			{
-				return !(drawingUI ? !hideFriendsChatMembers2D : !hideFriendsChatMembers);
+				return !(drawingUI ? hideFriendsChatMembers2D : hideFriendsChatMembers);
 			}
 
 			if (player.isClanMember())
 			{
-				return !(drawingUI ? !hideClanMembers2D : !hideClanMembers);
+				return !(drawingUI ? hideClanMembers2D : hideClanMembers);
 			}
 
 			if (client.getIgnoreContainer().findByName(player.getName()) != null)
@@ -218,5 +223,32 @@ public class EntityHiderPlugin extends Plugin
 		}
 
 		return true;
+	}
+
+	public void TemporarilyHidePlayers(boolean hiding, int failSafeTicks) {
+		temporaryHide = hiding;
+		if (hiding) {
+			unhideFailSafeTick = client.getTickCount() + failSafeTicks;
+			hideOthers = true;
+			hideOthers2D = true;
+			hideFriends = true;
+			hideFriends2D = true;
+			hideFriendsChatMembers = true;
+			hideFriendsChatMembers2D = true;
+			hideClanMembers = true;
+			hideClanMembers2D = true;
+		} else {
+			updateConfig();
+			unhideFailSafeTick = -1;
+		}
+	}
+
+	@Subscribe
+	public void onGameTick(GameTick event) {
+		if (unhideFailSafeTick != -1)
+			if (client.getTickCount() >= unhideFailSafeTick) {
+				unhideFailSafeTick = -1;
+				TemporarilyHidePlayers(false, -1);
+			}
 	}
 }
