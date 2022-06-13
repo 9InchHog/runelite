@@ -34,6 +34,7 @@ import net.runelite.api.Player;
 import net.runelite.api.Projectile;
 import net.runelite.api.Renderable;
 import net.runelite.api.Varbits;
+import net.runelite.api.events.GameTick;
 import net.runelite.client.callback.Hooks;
 import net.runelite.client.config.ConfigManager;
 import net.runelite.client.eventbus.Subscribe;
@@ -71,6 +72,9 @@ public class EntityHiderPlugin extends Plugin
 	private boolean hidePets;
 	private boolean hideAttackers;
 	private boolean hideProjectiles;
+	private boolean hideFriends2D;
+	private boolean hideFriendsChatMembers2D;
+	private boolean hideClanMembers2D;
 
 	private final Hooks.RenderableDrawListener drawListener = this::shouldDraw;
 
@@ -112,6 +116,10 @@ public class EntityHiderPlugin extends Plugin
 		hideFriendsChatMembers = config.hideFriendsChatMembers();
 		hideClanMembers = config.hideClanChatMembers();
 		hideIgnoredPlayers = config.hideIgnores();
+
+		hideFriends2D = config.hideFriends2D();
+		hideFriendsChatMembers2D = config.hideFriendsChatMembers2D();
+		hideClanMembers2D = config.hideClanChatMembers2D();
 
 		hideLocalPlayer = config.hideLocalPlayer();
 		hideLocalPlayer2D = config.hideLocalPlayer2D();
@@ -161,16 +169,19 @@ public class EntityHiderPlugin extends Plugin
 
 			if (player.isFriend())
 			{
-				return !hideFriends;
+				return !(drawingUI ? !hideFriends2D : !hideFriends);
 			}
+
 			if (player.isFriendsChatMember())
 			{
-				return !hideFriendsChatMembers;
+				return !(drawingUI ? !hideFriendsChatMembers2D : !hideFriendsChatMembers);
 			}
+
 			if (player.isClanMember())
 			{
-				return !hideClanMembers;
+				return !(drawingUI ? !hideClanMembers2D : !hideClanMembers);
 			}
+
 			if (client.getIgnoreContainer().findByName(player.getName()) != null)
 			{
 				return !hideIgnoredPlayers;
