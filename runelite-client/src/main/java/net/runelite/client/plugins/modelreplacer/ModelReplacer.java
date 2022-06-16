@@ -1,5 +1,6 @@
 package net.runelite.client.plugins.modelreplacer;
 
+import com.google.common.io.ByteStreams;
 import com.google.inject.Provides;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.ChatMessageType;
@@ -26,6 +27,8 @@ import net.runelite.client.util.Text;
 import javax.inject.Inject;
 import javax.swing.*;
 import java.awt.*;
+import java.io.IOException;
+import java.io.InputStream;
 import java.lang.reflect.Field;
 import java.util.*;
 import java.util.List;
@@ -41,22 +44,7 @@ public class ModelReplacer extends Plugin
 {
     private final static int MODEL_INDEX = 7;
     private final static int MODEL_INDEX_SHIFTED = MODEL_INDEX << 16;
-    private final static Set<Integer> overlays;
-    static
-    {
-        Set<Integer> ref = null;
-        try
-        {
-            Field f = OverlayIndex.class.getDeclaredField("overlays");
-            f.setAccessible(true);
-            ref = (Set<Integer>) f.get(null);
-        }
-        catch (NoSuchFieldException | IllegalAccessException e)
-        {
-            log.warn("Couldn't find field overlays for class OverlayIndex", e);
-        }
-        overlays = ref;
-    }
+    private final static HashMap<Integer, byte[]> models = new HashMap<>();
 
     @Inject
     private PluginManager pluginManager;
@@ -82,41 +70,21 @@ public class ModelReplacer extends Plugin
     @Override
     protected void startUp() throws Exception
     {
-        if (overlays == null)
-        {
-            SwingUtilities.invokeLater(() ->
-            {
-                try
-                {
-                    pluginManager.stopPlugin(this);
-                }
-                catch (PluginInstantiationException ex)
-                {
-                    log.error("error stopping plugin", ex);
-                }
-            });
-        }
-        else
-        {
-            Text.fromCSV(config.modelsToReplace()).forEach(id -> add(Integer.parseInt(id)));
-        }
+        Text.fromCSV(config.modelsToReplace()).forEach(id -> add(Integer.parseInt(id)));
     }
 
     @Override
     protected void shutDown() throws Exception
     {
-        if (overlays != null)
-        {
-            Text.fromCSV(config.modelsToReplace()).forEach(id -> remove(Integer.parseInt(id)));
+        Text.fromCSV(config.modelsToReplace()).forEach(id -> remove(Integer.parseInt(id)));
 
-            final ChatMessageBuilder message = new ChatMessageBuilder()
-                    .append(Color.MAGENTA, "Re-log to load the original models, hopping does not work!");
+        final ChatMessageBuilder message = new ChatMessageBuilder()
+                .append(Color.MAGENTA, "Re-log to load the original models, hopping does not work!");
 
-            chatMessageManager.queue(QueuedMessage.builder()
-                    .type(ChatMessageType.ITEM_EXAMINE)
-                    .runeLiteFormattedMessage(message.build())
-                    .build());
-        }
+        chatMessageManager.queue(QueuedMessage.builder()
+                .type(ChatMessageType.ITEM_EXAMINE)
+                .runeLiteFormattedMessage(message.build())
+                .build());
     }
 
     private int colorToRs2hsb(Color color) {
@@ -352,22 +320,46 @@ public class ModelReplacer extends Plugin
 
     private static void add(int modelId)
     {
-        if (overlays != null)
+        int model_overlay_index = MODEL_INDEX_SHIFTED | modelId;
+        if (!OverlayIndex.getCacheTransformers().containsKey(model_overlay_index))
         {
-            int model_overlay_index = MODEL_INDEX_SHIFTED | modelId;
-            if (!overlays.contains(model_overlay_index))
+            if (modelFileExists(modelId))
             {
-                if (modelFileExists(modelId))
+                if (!models.containsKey(model_overlay_index))
                 {
-                    overlays.add(model_overlay_index);
+                    models.put(model_overlay_index, getModel(modelId));
+                }
+                if (!OverlayIndex.getCacheTransformers().containsKey(model_overlay_index))
+                {
+                    OverlayIndex.getCacheTransformers().put(model_overlay_index, (rsData) ->
+                    {
+                        if (!models.containsKey(model_overlay_index))
+                        {
+                            return rsData;
+                        }
+                        return models.get(model_overlay_index);
+                    });
                 }
             }
         }
     }
 
+    private static byte[] getModel(int modelId)
+    {
+        final String path = String.format("/runelite/%s/%s", MODEL_INDEX, modelId);
+        try (final InputStream ovlIn = ModelReplacer.class.getResourceAsStream(path))
+        {
+            return ByteStreams.toByteArray(ovlIn);
+        }
+        catch (IOException e)
+        {
+            log.warn("Missing overlay data for {}", modelId);
+            return null;
+        }
+    }
+
     private static boolean modelFileExists(int modelId)
     {
-        //final String path = String.format("/runelite/%s/%s", MODEL_INDEX, modelId);
         final String path = String.format("/net/runelite/client/plugins/modelreplacer/%s", modelId);
 
         var resourceHash = ModelReplacer.class.getResource(path + ".hash");
@@ -389,10 +381,7 @@ public class ModelReplacer extends Plugin
 
     private static void remove(int modelId)
     {
-        if (overlays != null)
-        {
-            int model_overlay_index = MODEL_INDEX_SHIFTED | modelId;
-            overlays.remove(model_overlay_index);
-        }
+        int model_overlay_index = MODEL_INDEX_SHIFTED | modelId;
+        OverlayIndex.getCacheTransformers().remove(model_overlay_index);
     }
 }
