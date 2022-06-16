@@ -8,7 +8,8 @@ import net.runelite.client.config.ConfigSection;
 import java.awt.*;
 
 @ConfigGroup("modelreplacer")
-public interface ModelReplacerConfig extends Config {
+public interface ModelReplacerConfig extends Config
+{
     @ConfigSection(
             name = "Scythe",
             description = "Scythe settings",
@@ -135,7 +136,8 @@ public interface ModelReplacerConfig extends Config {
                 "Booger Helm:\n" + "female 14398";
     }
 
-    public enum raveScytheSwingMode {
+    enum raveScytheSwingMode
+    {
         OFF, RAVE, EPILEPSY
     }
 }
